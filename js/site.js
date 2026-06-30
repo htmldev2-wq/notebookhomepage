@@ -135,27 +135,43 @@
     { lines: ["Custom", "Branded", "Merchandise"], primary: "Explore Products", secondary: "Start Enquiry", image: "assets/images/hero-slide-3.png" }
   ];
   let heroIndex = 0;
-  const applyHero = () => {
+  const applyHero = (animate = false) => {
     const slide = heroSlides[heroIndex];
     const heroImage = document.querySelector(".hero__image");
-    document.querySelectorAll("[data-hero-line]").forEach((line, index) => {
-      line.textContent = slide.lines[index];
-      line.classList.toggle("green", index < 2);
-      line.classList.toggle("black", index === 2);
-    });
-    const primary = document.querySelector("[data-hero-primary]");
-    const secondary = document.querySelector("[data-hero-secondary]");
-    if (primary) primary.textContent = slide.primary;
-    if (secondary) secondary.textContent = slide.secondary;
-    if (heroImage) heroImage.style.backgroundImage = `url("${slide.image}")`;
+    const heroContent = document.querySelector(".hero__title");
+    const update = () => {
+      document.querySelectorAll("[data-hero-line]").forEach((line, index) => {
+        line.textContent = slide.lines[index];
+        line.classList.toggle("green", index < 2);
+        line.classList.toggle("black", index === 2);
+      });
+      const primary = document.querySelector("[data-hero-primary]");
+      const secondary = document.querySelector("[data-hero-secondary]");
+      if (primary) primary.textContent = slide.primary;
+      if (secondary) secondary.textContent = slide.secondary;
+      if (heroImage) heroImage.style.backgroundImage = `url("${slide.image}")`;
+    };
+    if (!animate) {
+      update();
+      return;
+    }
+    heroImage?.classList.add("hero__image--switching");
+    heroContent?.classList.add("hero__title--switching");
+    window.setTimeout(() => {
+      update();
+      window.requestAnimationFrame(() => {
+        heroImage?.classList.remove("hero__image--switching");
+        heroContent?.classList.remove("hero__title--switching");
+      });
+    }, 150);
   };
   document.querySelector(".hero__arrow--prev")?.addEventListener("click", () => {
     heroIndex = (heroIndex - 1 + heroSlides.length) % heroSlides.length;
-    applyHero();
+    applyHero(true);
   });
   document.querySelector(".hero__arrow--next")?.addEventListener("click", () => {
     heroIndex = (heroIndex + 1) % heroSlides.length;
-    applyHero();
+    applyHero(true);
   });
 
   const setBrandCardState = (card, isActive) => {
@@ -197,6 +213,7 @@
     const render = () => {
       order.forEach((itemIndex, slot) => {
         const item = items[itemIndex];
+        item.classList.add("desktop-carousel-card");
         item.style.left = positions[slot].left;
         item.style.top = positions[slot].top;
         item.style.width = positions[slot].width;
@@ -235,6 +252,7 @@
     let timer = 0;
     let touchStartX = 0;
     let touchStartY = 0;
+    let isDragging = false;
     const render = () => {
       if (window.innerWidth > 767) {
         track.style.transform = "";
@@ -265,14 +283,19 @@
       const touch = event.touches[0];
       touchStartX = touch.clientX;
       touchStartY = touch.clientY;
+      isDragging = true;
+      track.style.transition = "none";
     }, { passive: true });
     track.addEventListener("touchmove", (event) => {
-      if (window.innerWidth > 767 || !touchStartX) return;
+      if (window.innerWidth > 767 || !touchStartX || !isDragging) return;
       const touch = event.touches[0];
       const deltaX = touch.clientX - touchStartX;
       const deltaY = touch.clientY - touchStartY;
       if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 8) {
         event.preventDefault();
+        const width = track.getBoundingClientRect().width || 1;
+        const dragPercent = (deltaX / width) * 100;
+        track.style.transform = `translateX(${(-index * 100) + dragPercent}%)`;
       }
     }, { passive: false });
     track.addEventListener("touchend", (event) => {
@@ -281,11 +304,20 @@
       const deltaX = touch.clientX - touchStartX;
       touchStartX = 0;
       touchStartY = 0;
+      isDragging = false;
+      track.style.transition = "";
       if (Math.abs(deltaX) > 42) {
         moveTo(deltaX < 0 ? 1 : -1);
       } else {
         start();
       }
+    });
+    track.addEventListener("touchcancel", () => {
+      touchStartX = 0;
+      touchStartY = 0;
+      isDragging = false;
+      track.style.transition = "";
+      start();
     });
     window.addEventListener("resize", start);
     start();
@@ -310,6 +342,7 @@
   let brandLogoTimer = 0;
   let brandTouchStartX = 0;
   let brandTouchStartY = 0;
+  let brandIsDragging = false;
   const renderBrandLogoSlider = () => {
     if (!brandsRow) return;
     if (window.innerWidth > 767) {
@@ -351,14 +384,19 @@
     const touch = event.touches[0];
     brandTouchStartX = touch.clientX;
     brandTouchStartY = touch.clientY;
+    brandIsDragging = true;
+    brandsRow.style.transition = "none";
   }, { passive: true });
   brandsRow?.addEventListener("touchmove", (event) => {
-    if (window.innerWidth > 767 || !brandTouchStartX) return;
+    if (window.innerWidth > 767 || !brandTouchStartX || !brandIsDragging) return;
     const touch = event.touches[0];
     const deltaX = touch.clientX - brandTouchStartX;
     const deltaY = touch.clientY - brandTouchStartY;
     if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 8) {
       event.preventDefault();
+      const width = brandsRow.getBoundingClientRect().width || 1;
+      const dragPercent = (deltaX / width) * 100;
+      brandsRow.style.transform = `translateX(${(-brandLogoIndex * 100) + dragPercent}%)`;
     }
   }, { passive: false });
   brandsRow?.addEventListener("touchend", (event) => {
@@ -367,11 +405,20 @@
     const deltaX = touch.clientX - brandTouchStartX;
     brandTouchStartX = 0;
     brandTouchStartY = 0;
+    brandIsDragging = false;
+    brandsRow.style.transition = "";
     if (Math.abs(deltaX) > 42) {
       moveBrandLogo(deltaX < 0 ? 1 : -1);
     } else {
       startBrandLogoAutoSlide();
     }
+  });
+  brandsRow?.addEventListener("touchcancel", () => {
+    brandTouchStartX = 0;
+    brandTouchStartY = 0;
+    brandIsDragging = false;
+    brandsRow.style.transition = "";
+    startBrandLogoAutoSlide();
   });
   window.addEventListener("resize", startBrandLogoAutoSlide);
   renderBrandLogoSlider();

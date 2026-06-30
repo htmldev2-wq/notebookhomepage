@@ -5723,6 +5723,54 @@ button,
   margin-top: 2px !important;
 }
 
+@media (min-width: 768px) {
+  .hero__image {
+    transition: opacity 0.3s ease, transform 0.45s ease;
+    will-change: opacity, transform;
+  }
+
+  .hero__image--switching {
+    opacity: 0.74;
+    transform: scale(1.012);
+  }
+
+  .hero__title {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .hero__title--switching {
+    opacity: 0.78;
+    transform: translateY(8px);
+  }
+
+  .desktop-carousel-card {
+    transition:
+      left 0.58s cubic-bezier(0.22, 0.61, 0.36, 1),
+      top 0.58s cubic-bezier(0.22, 0.61, 0.36, 1),
+      width 0.58s cubic-bezier(0.22, 0.61, 0.36, 1),
+      height 0.58s cubic-bezier(0.22, 0.61, 0.36, 1),
+      transform 0.22s ease,
+      box-shadow 0.22s ease,
+      opacity 0.22s ease !important;
+    will-change: left, top, width, height, transform;
+  }
+
+  .hero__arrow,
+  .arrow {
+    transition: transform 0.18s ease, background-color 0.18s ease, opacity 0.18s ease;
+  }
+
+  .hero__arrow:hover,
+  .arrow:hover {
+    transform: translateY(-1px);
+  }
+
+  .hero__arrow:active,
+  .arrow:active {
+    transform: translateY(0) scale(0.94);
+  }
+}
+
 @media (max-width: 767px) {
   .brands {
     overflow: hidden !important;
