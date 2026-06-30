@@ -158,19 +158,51 @@
     applyHero();
   });
 
-  const createCarousel = (sectionSelector, itemSelector) => {
+  const setBrandCardState = (card, isActive) => {
+    const label = card.querySelector(".brand-card__label");
+    if (!label) return;
+    const title = card.dataset.title || label.textContent.trim();
+    const desc = card.dataset.desc || "Custom branding service details will be added soon.";
+    label.classList.toggle("brand-card__label--active", isActive);
+    if (isActive) {
+      label.innerHTML = `
+        <p class="brand-card__name">${title}</p>
+        <p class="brand-card__sub">${desc}</p>
+        <a class="brand-card__more" href="#contact">View More</a>
+      `;
+      const more = label.querySelector(".brand-card__more");
+      more?.addEventListener("click", (event) => {
+        event.preventDefault();
+        showToast("Request form is ready for your enquiry.");
+        scrollToTarget("contact");
+      });
+    } else {
+      label.innerHTML = `<span>${title}</span>`;
+    }
+  };
+
+  const createCarousel = (sectionSelector, itemSelector, options = {}) => {
     const section = document.querySelector(sectionSelector);
     if (!section) return;
     const items = Array.from(section.querySelectorAll(itemSelector));
     if (items.length < 2) return;
-    const positions = items.map((item) => ({ left: item.style.left, top: item.style.top, zIndex: item.style.zIndex || "" }));
+    const positions = items.map((item) => ({
+      left: item.style.left,
+      top: item.style.top,
+      width: item.style.width,
+      height: item.style.height,
+      zIndex: item.style.zIndex || ""
+    }));
     let order = items.map((_, index) => index);
     const render = () => {
       order.forEach((itemIndex, slot) => {
         const item = items[itemIndex];
         item.style.left = positions[slot].left;
         item.style.top = positions[slot].top;
+        item.style.width = positions[slot].width;
+        item.style.height = positions[slot].height;
         item.style.zIndex = positions[slot].zIndex;
+        options.onRenderItem?.(item, slot);
       });
     };
     const move = (direction) => {
@@ -180,12 +212,98 @@
     };
     section.querySelector(".arrow--prev")?.addEventListener("click", () => move(-1));
     section.querySelector(".arrow--next")?.addEventListener("click", () => move(1));
+    render();
   };
 
   createCarousel(".deals", ".deal-card");
   createCarousel(".season", ".season-card");
   createCarousel(".testi", ".testi-card");
-  createCarousel(".brand", ".brand-card");
+  createCarousel(".brand", ".brand-card", {
+    onRenderItem: (item, slot) => setBrandCardState(item, slot === 2)
+  });
+
+  const setupMobileAutoSlider = (sectionSelector, itemSelector, options = {}) => {
+    const section = document.querySelector(sectionSelector);
+    if (!section) return;
+    const items = Array.from(section.querySelectorAll(itemSelector));
+    if (items.length < 2) return;
+    const track = document.createElement("div");
+    track.className = "mobile-auto-track";
+    section.insertBefore(track, items[0]);
+    items.forEach((item) => track.appendChild(item));
+    let index = options.startIndex || 0;
+    let timer = 0;
+    const render = () => {
+      if (window.innerWidth > 767) {
+        track.style.transform = "";
+        options.onSlide?.(items, -1);
+        return;
+      }
+      track.style.transform = `translateX(-${index * 100}%)`;
+      options.onSlide?.(items, index);
+    };
+    const start = () => {
+      clearInterval(timer);
+      render();
+      if (window.innerWidth > 767) return;
+      timer = setInterval(() => {
+        index = (index + 1) % items.length;
+        render();
+      }, options.delay || 2800);
+    };
+    window.addEventListener("resize", start);
+    start();
+  };
+
+  setupMobileAutoSlider(".deals", ".deal-card", { delay: 2600 });
+  setupMobileAutoSlider(".season", ".season-card", { delay: 2800 });
+  setupMobileAutoSlider(".testi", ".testi-card", { delay: 3200 });
+  setupMobileAutoSlider(".brand", ".brand-card", {
+    delay: 3000,
+    startIndex: 2,
+    onSlide: (items, activeIndex) => {
+      if (activeIndex < 0) return;
+      items.forEach((item, itemIndex) => setBrandCardState(item, itemIndex === activeIndex));
+    }
+  });
+
+  const brandsSection = document.querySelector(".brands");
+  const brandsRow = brandsSection?.querySelector(".brands__row");
+  const brandLogos = brandsRow ? Array.from(brandsRow.querySelectorAll(".brand-logo")) : [];
+  let brandLogoIndex = 0;
+  let brandLogoTimer = 0;
+  const renderBrandLogoSlider = () => {
+    if (!brandsRow) return;
+    if (window.innerWidth > 767) {
+      brandsRow.style.transform = "";
+      return;
+    }
+    brandsRow.style.transform = `translateX(-${brandLogoIndex * 100}%)`;
+  };
+  brandsSection?.querySelector(".brands__carousel .arrow--prev")?.addEventListener("click", () => {
+    if (!brandLogos.length) return;
+    brandLogoIndex = (brandLogoIndex - 1 + brandLogos.length) % brandLogos.length;
+    renderBrandLogoSlider();
+  });
+  brandsSection?.querySelector(".brands__carousel .arrow--next")?.addEventListener("click", () => {
+    if (!brandLogos.length) return;
+    brandLogoIndex = (brandLogoIndex + 1) % brandLogos.length;
+    renderBrandLogoSlider();
+  });
+  const startBrandLogoAutoSlide = () => {
+    clearInterval(brandLogoTimer);
+    if (window.innerWidth > 767 || brandLogos.length < 2) {
+      renderBrandLogoSlider();
+      return;
+    }
+    brandLogoTimer = setInterval(() => {
+      brandLogoIndex = (brandLogoIndex + 1) % brandLogos.length;
+      renderBrandLogoSlider();
+    }, 2600);
+  };
+  window.addEventListener("resize", startBrandLogoAutoSlide);
+  renderBrandLogoSlider();
+  startBrandLogoAutoSlide();
 
   const faqItems = Array.from(document.querySelectorAll(".faq-item"));
   const setFaqOpen = (activeIndex) => {
