@@ -233,6 +233,8 @@
     items.forEach((item) => track.appendChild(item));
     let index = options.startIndex || 0;
     let timer = 0;
+    let touchStartX = 0;
+    let touchStartY = 0;
     const render = () => {
       if (window.innerWidth > 767) {
         track.style.transform = "";
@@ -251,6 +253,40 @@
         render();
       }, options.delay || 2800);
     };
+    const moveTo = (direction) => {
+      if (window.innerWidth > 767) return;
+      index = (index + direction + items.length) % items.length;
+      render();
+      start();
+    };
+    track.addEventListener("touchstart", (event) => {
+      if (window.innerWidth > 767) return;
+      clearInterval(timer);
+      const touch = event.touches[0];
+      touchStartX = touch.clientX;
+      touchStartY = touch.clientY;
+    }, { passive: true });
+    track.addEventListener("touchmove", (event) => {
+      if (window.innerWidth > 767 || !touchStartX) return;
+      const touch = event.touches[0];
+      const deltaX = touch.clientX - touchStartX;
+      const deltaY = touch.clientY - touchStartY;
+      if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 8) {
+        event.preventDefault();
+      }
+    }, { passive: false });
+    track.addEventListener("touchend", (event) => {
+      if (window.innerWidth > 767 || !touchStartX) return;
+      const touch = event.changedTouches[0];
+      const deltaX = touch.clientX - touchStartX;
+      touchStartX = 0;
+      touchStartY = 0;
+      if (Math.abs(deltaX) > 42) {
+        moveTo(deltaX < 0 ? 1 : -1);
+      } else {
+        start();
+      }
+    });
     window.addEventListener("resize", start);
     start();
   };
@@ -272,6 +308,8 @@
   const brandLogos = brandsRow ? Array.from(brandsRow.querySelectorAll(".brand-logo")) : [];
   let brandLogoIndex = 0;
   let brandLogoTimer = 0;
+  let brandTouchStartX = 0;
+  let brandTouchStartY = 0;
   const renderBrandLogoSlider = () => {
     if (!brandsRow) return;
     if (window.innerWidth > 767) {
@@ -301,6 +339,40 @@
       renderBrandLogoSlider();
     }, 2600);
   };
+  const moveBrandLogo = (direction) => {
+    if (window.innerWidth > 767 || !brandLogos.length) return;
+    brandLogoIndex = (brandLogoIndex + direction + brandLogos.length) % brandLogos.length;
+    renderBrandLogoSlider();
+    startBrandLogoAutoSlide();
+  };
+  brandsRow?.addEventListener("touchstart", (event) => {
+    if (window.innerWidth > 767) return;
+    clearInterval(brandLogoTimer);
+    const touch = event.touches[0];
+    brandTouchStartX = touch.clientX;
+    brandTouchStartY = touch.clientY;
+  }, { passive: true });
+  brandsRow?.addEventListener("touchmove", (event) => {
+    if (window.innerWidth > 767 || !brandTouchStartX) return;
+    const touch = event.touches[0];
+    const deltaX = touch.clientX - brandTouchStartX;
+    const deltaY = touch.clientY - brandTouchStartY;
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 8) {
+      event.preventDefault();
+    }
+  }, { passive: false });
+  brandsRow?.addEventListener("touchend", (event) => {
+    if (window.innerWidth > 767 || !brandTouchStartX) return;
+    const touch = event.changedTouches[0];
+    const deltaX = touch.clientX - brandTouchStartX;
+    brandTouchStartX = 0;
+    brandTouchStartY = 0;
+    if (Math.abs(deltaX) > 42) {
+      moveBrandLogo(deltaX < 0 ? 1 : -1);
+    } else {
+      startBrandLogoAutoSlide();
+    }
+  });
   window.addEventListener("resize", startBrandLogoAutoSlide);
   renderBrandLogoSlider();
   startBrandLogoAutoSlide();

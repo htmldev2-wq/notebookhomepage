@@ -5740,6 +5740,7 @@ button,
     overflow: visible !important;
     transition: transform 0.62s cubic-bezier(0.22, 0.61, 0.36, 1);
     will-change: transform;
+    touch-action: pan-y;
   }
 
   .brand-logo {
@@ -5795,6 +5796,7 @@ button,
     overflow: visible;
     transition: transform 0.42s ease;
     will-change: transform;
+    touch-action: pan-y;
   }
 
   .mobile-auto-track > .deal-card,
