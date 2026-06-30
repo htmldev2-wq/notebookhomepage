@@ -7,7 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700&family=Abhaya+Libre:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css" />
+  <link rel="icon" href="data:," />
+  <link rel="stylesheet" href="css/style.css?v=site-interactive" />
 </head>
 <body>
   <div class="page">
@@ -16,12 +17,12 @@
     <header class="top-bar" data-node="2:23">
       <div class="top-bar__group top-bar__call">
         <span class="reg">Call Us :</span>
-        <span class="semi">+(971)565233224</span>
-        <span class="semi">+97143429268</span>
+        <a class="semi" href="tel:+971565233224">+(971)565233224</a>
+        <a class="semi" href="tel:+97143429268">+97143429268</a>
       </div>
       <div class="top-bar__group top-bar__email">
         <span class="reg">Email Us :</span>
-        <span class="semi">sales@notebookprint.com</span>
+        <a class="semi" href="mailto:sales@notebookprint.com">sales@notebookprint.com</a>
       </div>
       <div class="top-bar__group top-bar__open">
         <span class="reg">We Are Open :</span>
@@ -30,33 +31,46 @@
     </header>
 
     <!-- ============ TOP NAV ============ -->
-    <nav class="top-nav" data-node="2:50">
-      <a class="top-nav__logo" href="#"><img src="assets/images/logo.png" alt="NoteBook" /></a>
-      <ul class="top-nav__menu">
-        <li>About Us</li>
-        <li class="has-caret">Services <span class="caret"><img src="assets/images/nav-arrow.svg" alt="" /></span></li>
-        <li class="has-caret">Products <span class="caret"><img src="assets/images/nav-arrow.svg" alt="" /></span></li>
-        <li>Gallery</li>
-        <li>Blog</li>
-        <li>Contact Us</li>
+    <nav class="top-nav" id="top" data-node="2:50">
+      <a class="top-nav__logo" href="#top" data-scroll-target="top"><img src="assets/images/logo.png" alt="NoteBook" /></a>
+      <ul class="top-nav__menu" id="mobile-menu">
+        <li><a href="#about" data-scroll-target="about">About Us</a></li>
+        <li class="has-caret"><a href="#services" data-scroll-target="services">Services</a> <span class="caret"><img src="assets/images/nav-arrow.svg" alt="" /></span></li>
+        <li class="has-caret"><a href="#products" data-scroll-target="products">Products</a> <span class="caret"><img src="assets/images/nav-arrow.svg" alt="" /></span></li>
+        <li><a href="#gallery" data-scroll-target="gallery">Gallery</a></li>
+        <li><a href="#blog" data-scroll-target="blog">Blog</a></li>
+        <li><a href="#contact" data-scroll-target="contact">Contact Us</a></li>
       </ul>
       <button class="top-nav__search" aria-label="Search"><img src="assets/images/mingcute_search-line.png" alt="" /></button>
-      <button class="top-nav__btn top-nav__quote">Get a Quote</button>
-      <button class="top-nav__btn top-nav__brochure">e-Brochures</button>
+      <button class="top-nav__toggle" type="button" aria-label="Open menu" aria-controls="mobile-menu" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <button class="top-nav__btn top-nav__quote" data-scroll-target="contact">Get a Quote</button>
+      <button class="top-nav__btn top-nav__brochure" data-action="brochure">e-Brochures</button>
     </nav>
 
+    <div class="search-panel" role="search" aria-hidden="true">
+      <form class="search-panel__form">
+        <input class="search-panel__input" type="search" placeholder="Search products, services, FAQ..." aria-label="Search site" />
+        <button class="search-panel__submit" type="submit">Search</button>
+        <button class="search-panel__close" type="button" aria-label="Close search">&times;</button>
+      </form>
+    </div>
+
     <!-- ============ HERO ============ -->
-    <section class="hero" data-node="2:51">
+    <section class="hero" id="home" data-node="2:51">
       <div class="hero__image"></div>
       <div class="hero__glow"></div>
       <h1 class="hero__title">
-        <span class="green">Eco</span>
-        <span class="green">Friendly</span>
-        <span class="black">Gifts</span>
+        <span class="green" data-hero-line="0">Eco</span>
+        <span class="green" data-hero-line="1">Friendly</span>
+        <span class="black" data-hero-line="2">Gifts</span>
       </h1>
       <div class="hero__actions">
-        <button class="btn btn--primary">Explore Gifts Sets</button>
-        <button class="btn btn--outline">Request Custom Quote</button>
+        <button class="btn btn--primary" data-hero-primary data-scroll-target="products">Explore Gifts Sets</button>
+        <button class="btn btn--outline" data-hero-secondary data-scroll-target="contact">Request Custom Quote</button>
       </div>
       <div class="hero__carousel">
         <button class="hero__arrow hero__arrow--prev" aria-label="Previous"><img src="assets/images/hero-carousel-arrow.svg" alt="" /></button>
@@ -103,7 +117,7 @@
     </section>
 
     <!-- ============ PROMOTIONAL GIFTS CATEGORIES ============ -->
-    <section class="categories" data-node="20:338">
+    <section class="categories" id="products" data-node="20:338">
       <h2 class="categories__title">Promotional Gifts Categories</h2>
       <p class="categories__desc">Explore our promotional products, executive gifts, branded office items, packaging products, technology gifts, and customized business merchandise commonly used for exhibitions, employee onboarding, corporate events, marketing campaigns, and brand promotions.</p>
       <a class="categories__viewall">View All Products</a>
@@ -184,7 +198,7 @@
     </section>
 
     <!-- ============ TOP DEALS & TRENDING ============ -->
-    <section class="deals" data-node="31:776">
+    <section class="deals" id="deals" data-node="31:776">
       <h2 class="deals__title">Top Deals &amp; Trending Collections</h2>
       <p class="deals__desc">We help businesses across UAE create customized corporate gifts, promotional products, and branded merchandise with reliable in-house branding and printing support.</p>
       <a class="deals__btn">Get Offer Details</a>
@@ -209,7 +223,7 @@
     </section>
 
     <!-- ============ SEASONAL & EXECUTIVE GIFTING ============ -->
-    <section class="season" data-node="51:198">
+    <section class="season" id="seasonal" data-node="51:198">
       <h2 class="season__title">Seasonal &amp; Executive Gifting Solutions UAE</h2>
       <p class="season__desc">Notebook Advertising LLC helps businesses across UAE create customized Ramadan gifts, festive hampers, employee welcome kits, and executive gift sets designed to strengthen customer relationships, employee engagement, and brand visibility.</p>
 
@@ -254,7 +268,7 @@
     </section>
 
     <!-- ============ OUR FEATURED PRODUCTS ============ -->
-    <section class="featured" data-node="61:427">
+    <section class="featured" id="featured" data-node="61:427">
       <h2 class="featured__title">Our Featured Products</h2>
       <p class="featured__desc">Browse featured corporate gifts, promotional giveaways, branded merchandise, executive gift sets, and business products selected for exhibitions, onboarding programs, corporate branding activities, and marketing campaigns.</p>
 
@@ -387,11 +401,11 @@
         <a class="pill pill--enq"><span class="pill__circle"><img class="ring" src="assets/images/pill-circle-blue.svg" alt="" /><img class="ic" src="assets/images/ic-email.svg" alt="" /></span><span class="pill__txt">Enquiry</span></a>
       </article>
 
-      <a class="featured__more">More Products</a>
+      <a class="featured__more" href="#products" data-scroll-target="products">More Products</a>
     </section>
 
     <!-- ============ TESTIMONIALS ============ -->
-    <section class="testi" data-node="61:573">
+    <section class="testi" id="testimonials" data-node="61:573">
       <h2 class="testi__title">Hear From Our Happy Clients</h2>
       <p class="testi__subtitle">Trusted Corporate Gifting Partner in UAE</p>
       <div class="testi__google">
@@ -455,7 +469,7 @@
     </section>
 
     <!-- ============ CORPORATE BRANDING & PRINTING SERVICES ============ -->
-    <section class="brand" data-node="73:647">
+    <section class="brand" id="services" data-node="73:647">
       <h2 class="brand__title">Corporate Branding &amp; Printing Services</h2>
       <p class="brand__desc">From logo printing and engraving to packaging branding and product customization, our in-house team helps businesses create professionally branded merchandise with consistent quality, faster turnaround support, and reliable production coordination.</p>
 
@@ -492,22 +506,22 @@
     </section>
 
     <!-- ============ CTA: STILL EXPLORING ============ -->
-    <section class="cta" data-node="73:657">
+    <section class="cta" id="blog" data-node="73:657">
       <h2 class="cta__title">Still exploring the right corporate gifting partner for your business?</h2>
       <p class="cta__desc">Looking for a reliable partner for corporate gifts, promotional products, or bulk branding requirements? Our team is ready to help you choose suitable products, customization methods, and branding solutions based on your business needs..</p>
       <div class="cta__actions">
-        <a class="btn btn--primary">Explore Products</a>
-        <a class="btn btn--outline">Request Custom Quote</a>
+        <a class="btn btn--primary" href="#products" data-scroll-target="products">Explore Products</a>
+        <a class="btn btn--outline" href="#contact" data-scroll-target="contact">Request Custom Quote</a>
       </div>
     </section>
 
     <!-- ============ TRUSTED BY LEADING BRANDS ============ -->
-    <section class="brands" data-node="77:1171">
+    <section class="brands" id="trusted-brands" data-node="77:1171">
       <h2 class="brands__title">Trusted by Leading Brands Across UAE</h2>
       <div class="brands__row">
         <div class="brand-logo" style="width:150px;height:54px"><img src="assets/images/brand-acwa.png" alt="ACWA Power" /></div>
         <div class="brand-logo" style="width:92px;height:124px"><img class="crop crop--19" src="assets/images/brand-img19.png" alt="" /></div>
-        <div class="brand-logo" style="width:150px;height:75px"><img class="crop crop--20" src="assets/images/brand-img20.png" alt="" /></div>
+        <div class="brand-logo brand-logo--yusuf" style="width:225px;height:110px"><img src="assets/images/brand-img20.png" alt="" /></div>
         <div class="brand-logo" style="width:149.329px;height:152px"><img src="assets/images/brand-midad.png" alt="Midad" /></div>
         <div class="brand-logo" style="width:150px;height:150px"><img src="assets/images/southern-sudan-seal.png" alt="Government of Southern Sudan" /></div>
         <div class="brand-logo" style="width:150px;height:84px"><img src="assets/images/brand-goc.png" alt="GOC" /></div>
@@ -516,7 +530,7 @@
     </section>
 
     <!-- ============ OUR BRANCHES ============ -->
-    <section class="branches" data-node="77:1311">
+    <section class="branches" id="branches" data-node="77:1311">
       <h2 class="branches__title">Our Branches</h2>
       <p class="branches__subtitle">Corporate Gifting &amp; Printing Across UAE</p>
       <p class="branches__desc">With 23+ years of market experience and 3 operational branches across Dubai, including a dedicated in-house printing unit, Notebook Advertising LLC supports businesses across the UAE with corporate gifting, promotional products, customization, and digital printing solutions backed by reliable production handling, bulk order support, and professional branding services.</p>
@@ -530,8 +544,8 @@
         </div>
         <div class="branch-card__band"></div>
         <div class="branch-card__btns">
-          <a class="branch-btn branch-btn--wa"><img src="assets/images/ic-whatsapp2.svg" alt="" />Contact Now</a>
-          <a class="branch-btn branch-btn--map"><img src="assets/images/ic-map.svg" alt="" />Got to Map</a>
+          <a class="branch-btn branch-btn--wa" href="https://wa.me/971545582013" target="_blank" rel="noopener"><img src="assets/images/ic-whatsapp2.svg" alt="" />Contact Now</a>
+          <a class="branch-btn branch-btn--map" href="https://www.google.com/maps/search/?api=1&query=Mohammed%20Al%20Sayed%20Ibrahim%20Building%202%20Al%20Sabkha%20St%20London%20Hotel%20Deira%20Dubai" target="_blank" rel="noopener"><img src="assets/images/ic-map.svg" alt="" />Got to Map</a>
         </div>
       </article>
 
@@ -544,8 +558,8 @@
         </div>
         <div class="branch-card__band"></div>
         <div class="branch-card__btns">
-          <a class="branch-btn branch-btn--wa"><img src="assets/images/ic-whatsapp2.svg" alt="" />Contact Now</a>
-          <a class="branch-btn branch-btn--map"><img src="assets/images/ic-map.svg" alt="" />Got to Map</a>
+          <a class="branch-btn branch-btn--wa" href="https://wa.me/971525034639" target="_blank" rel="noopener"><img src="assets/images/ic-whatsapp2.svg" alt="" />Contact Now</a>
+          <a class="branch-btn branch-btn--map" href="https://www.google.com/maps/search/?api=1&query=24%2029th%20St%20Al%20Qusais%20Industrial%20Third%20Dubai" target="_blank" rel="noopener"><img src="assets/images/ic-map.svg" alt="" />Got to Map</a>
         </div>
       </article>
 
@@ -558,14 +572,14 @@
         </div>
         <div class="branch-card__band"></div>
         <div class="branch-card__btns">
-          <a class="branch-btn branch-btn--wa"><img src="assets/images/ic-whatsapp2.svg" alt="" />Contact Now</a>
-          <a class="branch-btn branch-btn--map"><img src="assets/images/ic-map.svg" alt="" />Got to Map</a>
+          <a class="branch-btn branch-btn--wa" href="https://wa.me/971556097226" target="_blank" rel="noopener"><img src="assets/images/ic-whatsapp2.svg" alt="" />Contact Now</a>
+          <a class="branch-btn branch-btn--map" href="https://www.google.com/maps/search/?api=1&query=12%2018th%20St%20Ayal%20Nasir%20Deira%20Dubai" target="_blank" rel="noopener"><img src="assets/images/ic-map.svg" alt="" />Got to Map</a>
         </div>
       </article>
     </section>
 
     <!-- ============ WHY BUSINESSES CHOOSE ============ -->
-    <section class="why" data-node="84:1438">
+    <section class="why" id="why-us" data-node="84:1438">
       <h2 class="why__title">Why Businesses Choose Notebook Advertising LLC</h2>
       <p class="why__desc">Businesses choose us for dependable service, professional customization quality, bulk order handling, fast delivery coordination, and responsive support for promotional merchandise and corporate branding projects.</p>
 
@@ -607,7 +621,7 @@
     </section>
 
     <!-- ============ TRUSTED BY SECTORS ============ -->
-    <section class="sectors" data-node="84:1651">
+    <section class="sectors" id="sectors" data-node="84:1651">
       <h2 class="sectors__title">Trusted by Businesses Across Multiple Sectors</h2>
 
       <article class="sector-card" style="left:100px;top:146px"><span class="sector-card__circle"><img src="assets/images/hugeicons_real-estate-01.png" alt="" /></span><span class="sector-card__label">Real Estate</span></article>
@@ -623,7 +637,7 @@
     </section>
 
     <!-- ============ RECENT PROJECTS ============ -->
-    <section class="projects" data-node="84:1652">
+    <section class="projects" id="gallery" data-node="84:1652">
       <h2 class="projects__title">Our Recent Branding &amp; Customization Projects</h2>
       <p class="projects__desc">Take a look at recent branding and customization projects completed for exhibitions, corporate events, promotional campaigns, executive gifting, packaging branding, and customized business merchandise requirements across UAE.</p>
 
@@ -651,7 +665,7 @@
     </section>
 
     <!-- ============ OUR PROCESS ============ -->
-    <section class="process" data-node="89:1750">
+    <section class="process" id="process" data-node="89:1750">
       <h2 class="process__title">Our Process</h2>
       <p class="process__subtitle">Professional Corporate Gifting Made Simple</p>
       <p class="process__desc">We simplify the entire corporate gifting process — from product selection and branding approvals to customization, packaging preparation, and delivery coordination for businesses across UAE.</p>
@@ -674,39 +688,64 @@
     </section>
 
     <!-- ============ ABOUT + CONTACT FORM ============ -->
-    <section class="contact" data-node="89:1751">
+    <section class="contact" id="about" data-node="89:1751">
       <h2 class="contact__title">Your Trusted Corporate Gifting Partner in UAE</h2>
       <p class="contact__brand">Notebook Advertising LLC</p>
       <p class="contact__p contact__p1">Established in 2003, Notebook Advertising LLC is a Dubai-based corporate gifting, promotional merchandise, and branding solutions company serving businesses across the UAE and international markets. We specialize in customized corporate gifts, promotional products, executive gifting, event merchandise, branding products, and professional printing solutions tailored for modern businesses.</p>
       <p class="contact__p contact__p2">With dedicated printing operations, in-house branding &amp; customization support, warehouse and distribution facilities, and a skilled team of 28+ members, we help businesses manage their corporate gifting and branding requirements through a smooth and professional process. Today, Notebook Advertising LLC supports companies with 1000+ customizable products, bulk order solutions, UAE &amp; worldwide shipping, and trusted service backed by 23+ years of industry experience and 20,000+ clients served.</p>
-      <a class="contact__call">Call Now</a>
+      <a class="contact__call" href="tel:+971565233224">Call Now</a>
 
-      <div class="contact__form">
+      <form class="contact__form" id="contact" novalidate>
         <p class="contact__form-title">Request Your Custom Quote Today</p>
         <p class="contact__form-desc">Find answers to common questions about corporate gifts, promotional products, customization methods, delivery timelines, bulk orders, branding support, exhibition giveaways, and business gifting solutions across UAE.</p>
-        <div class="field" style="top:209px"><span>Name</span></div>
-        <div class="field" style="top:291px"><span>Phone Number</span></div>
-        <div class="field" style="top:373px"><span>Email</span></div>
-        <div class="field field--area" style="top:455px"><span>Message</span></div>
-        <a class="contact__submit">Submit</a>
-      </div>
+        <label class="field" style="top:209px"><span>Name</span><input name="name" type="text" autocomplete="name" required /></label>
+        <label class="field" style="top:291px"><span>Phone Number</span><input name="phone" type="tel" autocomplete="tel" required /></label>
+        <label class="field" style="top:373px"><span>Email</span><input name="email" type="email" autocomplete="email" required /></label>
+        <label class="field field--area" style="top:455px"><span>Message</span><textarea name="message" required></textarea></label>
+        <p class="contact__status" role="status" aria-live="polite"></p>
+        <button class="contact__submit" type="submit">Submit</button>
+      </form>
     </section>
 
     <!-- ============ FAQ ============ -->
-    <section class="faq" data-node="151:1784">
+    <section class="faq" id="faq" data-node="151:1784">
       <h2 class="faq__title">Frequently Asked Questions</h2>
 
-      <div class="faq-item faq-item--open" style="top:83px">
+      <div class="faq-item faq-item--open" style="top:83px" tabindex="0" role="button" aria-expanded="true">
         <p class="faq-item__q">Do you provide customized corporate gifts and promotional products across UAE?</p>
         <span class="faq-item__icon"><img src="assets/images/ic-minus.svg" alt="" /></span>
         <div class="faq-item__answer"><p>Yes. Notebook Advertising LLC supplies customized corporate gifts, promotional merchandise, exhibition giveaways, employee welcome kits, branded office products, and promotional items across Dubai, Abu Dhabi, Sharjah, and all UAE regions.</p></div>
       </div>
-      <div class="faq-item" style="top:326px"><p class="faq-item__q">What branding and printing methods do you provide?</p><span class="faq-item__icon"><img src="assets/images/ic-plus.svg" alt="" /></span></div>
-      <div class="faq-item" style="top:426px"><p class="faq-item__q">Can you handle bulk corporate orders and exhibition giveaway requirements?</p><span class="faq-item__icon"><img src="assets/images/ic-plus.svg" alt="" /></span></div>
-      <div class="faq-item" style="top:526px"><p class="faq-item__q">What is the minimum order quantity (MOQ) for customized products?</p><span class="faq-item__icon"><img src="assets/images/ic-plus.svg" alt="" /></span></div>
-      <div class="faq-item" style="top:626px"><p class="faq-item__q">How long does production and delivery take?</p><span class="faq-item__icon"><img src="assets/images/ic-plus.svg" alt="" /></span></div>
-      <div class="faq-item" style="top:726px"><p class="faq-item__q">Do you provide product samples or branding mockups before production?</p><span class="faq-item__icon"><img src="assets/images/ic-plus.svg" alt="" /></span></div>
-      <div class="faq-item" style="top:826px"><p class="faq-item__q">What payment methods do you accept for corporate and bulk orders?</p><span class="faq-item__icon"><img src="assets/images/ic-plus.svg" alt="" /></span></div>
+      <div class="faq-item" style="top:326px" tabindex="0" role="button" aria-expanded="false">
+        <p class="faq-item__q">What branding and printing methods do you provide?</p>
+        <span class="faq-item__icon"><img src="assets/images/ic-plus.svg" alt="" /></span>
+        <div class="faq-item__answer"><p>We support screen printing, digital printing, UV printing, DTF printing, engraving, heat transfer, sticker labeling, packaging branding, and product mockup support depending on the selected item and order requirement.</p></div>
+      </div>
+      <div class="faq-item" style="top:426px" tabindex="0" role="button" aria-expanded="false">
+        <p class="faq-item__q">Can you handle bulk corporate orders and exhibition giveaway requirements?</p>
+        <span class="faq-item__icon"><img src="assets/images/ic-plus.svg" alt="" /></span>
+        <div class="faq-item__answer"><p>Yes. Our team manages bulk corporate gift orders, exhibition giveaways, event merchandise, branded packaging, delivery coordination, and repeat-order support for businesses across the UAE.</p></div>
+      </div>
+      <div class="faq-item" style="top:526px" tabindex="0" role="button" aria-expanded="false">
+        <p class="faq-item__q">What is the minimum order quantity (MOQ) for customized products?</p>
+        <span class="faq-item__icon"><img src="assets/images/ic-plus.svg" alt="" /></span>
+        <div class="faq-item__answer"><p>MOQ depends on the product, branding method, and availability. Some ready promotional items start from smaller quantities, while custom production, packaging, and imported merchandise may require higher quantities.</p></div>
+      </div>
+      <div class="faq-item" style="top:626px" tabindex="0" role="button" aria-expanded="false">
+        <p class="faq-item__q">How long does production and delivery take?</p>
+        <span class="faq-item__icon"><img src="assets/images/ic-plus.svg" alt="" /></span>
+        <div class="faq-item__answer"><p>Production timelines vary by product, quantity, branding method, and proof approval. Standard UAE orders are coordinated as quickly as possible after artwork confirmation, sample approval, and payment processing.</p></div>
+      </div>
+      <div class="faq-item" style="top:726px" tabindex="0" role="button" aria-expanded="false">
+        <p class="faq-item__q">Do you provide product samples or branding mockups before production?</p>
+        <span class="faq-item__icon"><img src="assets/images/ic-plus.svg" alt="" /></span>
+        <div class="faq-item__answer"><p>Yes. We can provide product samples, digital mockups, and branding previews where applicable so your team can confirm product choice, logo placement, and finishing details before bulk production.</p></div>
+      </div>
+      <div class="faq-item" style="top:826px" tabindex="0" role="button" aria-expanded="false">
+        <p class="faq-item__q">What payment methods do you accept for corporate and bulk orders?</p>
+        <span class="faq-item__icon"><img src="assets/images/ic-plus.svg" alt="" /></span>
+        <div class="faq-item__answer"><p>Payment options can include bank transfer, cash, cheque, or agreed corporate payment terms depending on the order value, client account status, and project timeline.</p></div>
+      </div>
     </section>
 
     <!-- ============ FOOTER ============ -->
@@ -714,26 +753,26 @@
       <div class="ftr__pattern"></div>
 
       <h4 class="ftr-head" style="left:100px">Quick Links</h4>
-      <a class="ftr-link" style="left:100px;top:126.76px"><span class="ftr-link__b"><img src="assets/images/ftr-arrow.svg" alt="" /></span>About Us</a>
-      <a class="ftr-link" style="left:320px;top:126.76px"><span class="ftr-link__b"><img src="assets/images/ftr-arrow.svg" alt="" /></span>Services</a>
-      <a class="ftr-link" style="left:100px;top:166.76px"><span class="ftr-link__b"><img src="assets/images/ftr-arrow.svg" alt="" /></span>Products</a>
-      <a class="ftr-link" style="left:320px;top:166.76px"><span class="ftr-link__b"><img src="assets/images/ftr-arrow.svg" alt="" /></span>Gallery</a>
-      <a class="ftr-link" style="left:100px;top:206.76px"><span class="ftr-link__b"><img src="assets/images/ftr-arrow.svg" alt="" /></span>Blog</a>
-      <a class="ftr-link" style="left:320px;top:206.76px"><span class="ftr-link__b"><img src="assets/images/ftr-arrow.svg" alt="" /></span>Contact Us</a>
+      <a class="ftr-link" href="#about" data-scroll-target="about" style="left:100px;top:126.76px"><span class="ftr-link__b"><img src="assets/images/ftr-arrow.svg" alt="" /></span>About Us</a>
+      <a class="ftr-link" href="#services" data-scroll-target="services" style="left:320px;top:126.76px"><span class="ftr-link__b"><img src="assets/images/ftr-arrow.svg" alt="" /></span>Services</a>
+      <a class="ftr-link" href="#products" data-scroll-target="products" style="left:100px;top:166.76px"><span class="ftr-link__b"><img src="assets/images/ftr-arrow.svg" alt="" /></span>Products</a>
+      <a class="ftr-link" href="#gallery" data-scroll-target="gallery" style="left:320px;top:166.76px"><span class="ftr-link__b"><img src="assets/images/ftr-arrow.svg" alt="" /></span>Gallery</a>
+      <a class="ftr-link" href="#blog" data-scroll-target="blog" style="left:100px;top:206.76px"><span class="ftr-link__b"><img src="assets/images/ftr-arrow.svg" alt="" /></span>Blog</a>
+      <a class="ftr-link" href="#contact" data-scroll-target="contact" style="left:320px;top:206.76px"><span class="ftr-link__b"><img src="assets/images/ftr-arrow.svg" alt="" /></span>Contact Us</a>
 
       <h4 class="ftr-head" style="left:634.74px">Our Services</h4>
-      <a class="ftr-link" style="left:634.74px;top:126.76px"><span class="ftr-link__b"><img src="assets/images/ftr-arrow.svg" alt="" /></span>Graphic Designing</a>
-      <a class="ftr-link" style="left:964.74px;top:126.76px"><span class="ftr-link__b"><img src="assets/images/ftr-arrow.svg" alt="" /></span>Screen Printing</a>
-      <a class="ftr-link" style="left:634.74px;top:166.76px"><span class="ftr-link__b"><img src="assets/images/ftr-arrow.svg" alt="" /></span>Digital Printing</a>
-      <a class="ftr-link" style="left:964.74px;top:166.76px"><span class="ftr-link__b"><img src="assets/images/ftr-arrow.svg" alt="" /></span>UV Printing</a>
-      <a class="ftr-link" style="left:634.74px;top:206.76px"><span class="ftr-link__b"><img src="assets/images/ftr-arrow.svg" alt="" /></span>Engraving</a>
-      <a class="ftr-link" style="left:964.74px;top:206.76px"><span class="ftr-link__b"><img src="assets/images/ftr-arrow.svg" alt="" /></span>DTF Printing Service in Dubai</a>
+      <a class="ftr-link" href="#services" data-scroll-target="services" style="left:634.74px;top:126.76px"><span class="ftr-link__b"><img src="assets/images/ftr-arrow.svg" alt="" /></span>Graphic Designing</a>
+      <a class="ftr-link" href="#services" data-scroll-target="services" style="left:964.74px;top:126.76px"><span class="ftr-link__b"><img src="assets/images/ftr-arrow.svg" alt="" /></span>Screen Printing</a>
+      <a class="ftr-link" href="#services" data-scroll-target="services" style="left:634.74px;top:166.76px"><span class="ftr-link__b"><img src="assets/images/ftr-arrow.svg" alt="" /></span>Digital Printing</a>
+      <a class="ftr-link" href="#services" data-scroll-target="services" style="left:964.74px;top:166.76px"><span class="ftr-link__b"><img src="assets/images/ftr-arrow.svg" alt="" /></span>UV Printing</a>
+      <a class="ftr-link" href="#services" data-scroll-target="services" style="left:634.74px;top:206.76px"><span class="ftr-link__b"><img src="assets/images/ftr-arrow.svg" alt="" /></span>Engraving</a>
+      <a class="ftr-link" href="#services" data-scroll-target="services" style="left:964.74px;top:206.76px"><span class="ftr-link__b"><img src="assets/images/ftr-arrow.svg" alt="" /></span>DTF Printing Service in Dubai</a>
 
       <h4 class="ftr-head" style="left:1351.37px">Contact Info</h4>
-      <div class="ftr-contact ftr-contact--phone"><img class="ftr-contact__ic" src="assets/images/mingcute_phone-fill.png" alt="" style="top:118px" /><span class="ftr-contact__t" style="top:120px">(+971) 565233224</span></div>
-      <div class="ftr-contact ftr-contact--mail"><img class="ftr-contact__ic" src="assets/images/iconoir_mail-solid.png" alt="" style="top:158px" /><span class="ftr-contact__t" style="top:160px">sales@notebookprint.com</span><span class="ftr-contact__t" style="top:190px">info@notebookprint.com</span></div>
+      <div class="ftr-contact ftr-contact--phone"><img class="ftr-contact__ic" src="assets/images/mingcute_phone-fill.png" alt="" style="top:118px" /><a class="ftr-contact__t" href="tel:+971565233224" style="top:120px">(+971) 565233224</a></div>
+      <div class="ftr-contact ftr-contact--mail"><img class="ftr-contact__ic" src="assets/images/iconoir_mail-solid.png" alt="" style="top:158px" /><a class="ftr-contact__t" href="mailto:sales@notebookprint.com" style="top:160px">sales@notebookprint.com</a><a class="ftr-contact__t" href="mailto:info@notebookprint.com" style="top:190px">info@notebookprint.com</a></div>
       <div class="ftr-contact ftr-contact--loc"><img class="ftr-contact__ic" src="assets/images/weui_location-filled.png" alt="" style="top:228px" /><span class="ftr-contact__t ftr-contact__addr" style="top:230px">MAIN BRANCH SHOWROOM Near London Hotel, Sabka, Deira, Dubai, U.A.E. PO Box:119932</span></div>
-      <a class="ftr-map">Got to Map</a>
+      <a class="ftr-map" href="https://www.google.com/maps/search/?api=1&query=Notebook%20Advertising%20LLC%20Sabka%20Deira%20Dubai" target="_blank" rel="noopener">Got to Map</a>
 
       <div class="ftr-social">
         <a href="#"><img src="assets/images/soc-facebook.svg" alt="Facebook" /></a>
@@ -749,6 +788,9 @@
       <p class="ftr-legal">Privacy Policy | Terms &amp; Conditions | Return &amp; Exchange Policy</p>
     </footer>
 
+    <div class="site-toast" role="status" aria-live="polite"></div>
+
   </div>
+  <script src="js/site.js?v=site-interactive"></script>
 </body>
 </html>
