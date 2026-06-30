@@ -130,13 +130,14 @@
   });
 
   const heroSlides = [
-    { lines: ["Eco", "Friendly", "Gifts"], primary: "Explore Gifts Sets", secondary: "Request Custom Quote" },
-    { lines: ["Corporate", "Gift", "Sets"], primary: "View Products", secondary: "Get a Quote" },
-    { lines: ["Custom", "Branded", "Merchandise"], primary: "Explore Products", secondary: "Start Enquiry" }
+    { lines: ["Eco", "Friendly", "Gifts"], primary: "Explore Gifts Sets", secondary: "Request Custom Quote", image: "assets/images/hero.png" },
+    { lines: ["Corporate", "Gift", "Sets"], primary: "View Products", secondary: "Get a Quote", image: "assets/images/hero-slide-2.png" },
+    { lines: ["Custom", "Branded", "Merchandise"], primary: "Explore Products", secondary: "Start Enquiry", image: "assets/images/hero-slide-3.png" }
   ];
   let heroIndex = 0;
   const applyHero = () => {
     const slide = heroSlides[heroIndex];
+    const heroImage = document.querySelector(".hero__image");
     document.querySelectorAll("[data-hero-line]").forEach((line, index) => {
       line.textContent = slide.lines[index];
       line.classList.toggle("green", index < 2);
@@ -146,6 +147,7 @@
     const secondary = document.querySelector("[data-hero-secondary]");
     if (primary) primary.textContent = slide.primary;
     if (secondary) secondary.textContent = slide.secondary;
+    if (heroImage) heroImage.style.backgroundImage = `url("${slide.image}")`;
   };
   document.querySelector(".hero__arrow--prev")?.addEventListener("click", () => {
     heroIndex = (heroIndex - 1 + heroSlides.length) % heroSlides.length;
