@@ -4375,11 +4375,46 @@ button,
   }
 
   .testi-card {
-    padding-bottom: 22px !important;
+    padding: 18px 18px 24px !important;
+    gap: 10px;
   }
 
   .testi-card__stars {
     margin-bottom: 12px;
+  }
+
+  .testi-card__head {
+    font-size: 13px;
+    line-height: 1.35;
+  }
+
+  .testi-card__text {
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  .testi-card__avatar {
+    width: 42px !important;
+    height: 42px !important;
+  }
+
+  .testi-card__name,
+  .testi-card__role {
+    font-size: 12px;
+    line-height: 1.35;
+  }
+
+  .testi-card__g {
+    width: 30px !important;
+    height: 30px !important;
+    min-width: 30px;
+    min-height: 30px;
+    flex-basis: 30px;
+  }
+
+  .testi-card__g img {
+    width: 17px !important;
+    height: 17px !important;
   }
 
   .brands__row {
@@ -4528,6 +4563,16 @@ button,
   .top-nav__menu .caret {
     margin-right: 14px;
     flex: 0 0 24px;
+  }
+
+  .categories__viewall {
+    width: min(100%, 190px) !important;
+    min-height: 46px;
+    padding: 0 18px;
+    font-size: 14px;
+    line-height: 1;
+    white-space: nowrap;
+    border-radius: 5px;
   }
 
   .hero {
