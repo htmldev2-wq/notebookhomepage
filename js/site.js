@@ -254,7 +254,7 @@
     let touchStartY = 0;
     let isDragging = false;
     const slideGap = () => window.innerWidth <= 767 ? 18 : 0;
-    const slideWidth = () => section.getBoundingClientRect().width || window.innerWidth || 1;
+    const slideWidth = () => items[0]?.getBoundingClientRect().width || section.getBoundingClientRect().width || window.innerWidth || 1;
     const slideOffset = () => index * (slideWidth() + slideGap());
     const render = () => {
       if (window.innerWidth > 767) {
@@ -345,7 +345,7 @@
   let brandTouchStartY = 0;
   let brandIsDragging = false;
   const brandSlideGap = () => window.innerWidth <= 767 ? 18 : 0;
-  const brandSlideWidth = () => brandsSection?.getBoundingClientRect().width || window.innerWidth || 1;
+  const brandSlideWidth = () => brandLogos[0]?.getBoundingClientRect().width || brandsSection?.getBoundingClientRect().width || window.innerWidth || 1;
   const brandSlideOffset = () => brandLogoIndex * (brandSlideWidth() + brandSlideGap());
   const renderBrandLogoSlider = () => {
     if (!brandsRow) return;
