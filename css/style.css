@@ -3032,12 +3032,12 @@ button,
     grid-column: 1 / -1;
   }
 
-  .cat-card,
+  .cat-card:not(.swiper-slide),
   .product-card,
-  .deal-card,
-  .season-card,
-  .testi-card,
-  .brand-card,
+  .deal-card:not(.swiper-slide),
+  .season-card:not(.swiper-slide),
+  .testi-card:not(.swiper-slide),
+  .brand-card:not(.swiper-slide),
   .branch-card,
   .sector-card,
   .project-card,
@@ -3047,9 +3047,9 @@ button,
     min-height: auto;
   }
 
-  .cat-card,
+  .cat-card:not(.swiper-slide),
   .product-card,
-  .testi-card,
+  .testi-card:not(.swiper-slide),
   .branch-card,
   .sector-card,
   .process-card {
@@ -3626,9 +3626,9 @@ button,
     line-height: 18px;
   }
 
-  .cat-card,
+  .cat-card:not(.swiper-slide),
   .product-card,
-  .testi-card,
+  .testi-card:not(.swiper-slide),
   .branch-card,
   .sector-card,
   .process-card {
@@ -4470,12 +4470,12 @@ button,
     grid-column: 1 / -1;
   }
 
-  .cat-card,
+  .cat-card:not(.swiper-slide),
   .product-card,
   .branch-card,
   .sector-card,
   .process-card,
-  .testi-card {
+  .testi-card:not(.swiper-slide) {
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -6212,5 +6212,314 @@ button,
   .ftr-link[style*="left:964.74px"] {
     width: calc((100vw - 70px) * 0.56) !important;
     max-width: 190px !important;
+  }
+}
+
+/* Swiper-powered sliders */
+.hero__swiper {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.hero__swiper .swiper-slide,
+.hero__slide-bg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.hero__slide-bg {
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.hero__image {
+  z-index: 0;
+}
+
+.hero__glow,
+.hero__title,
+.hero__actions,
+.hero__carousel {
+  z-index: 2;
+}
+
+.site-swiper {
+  overflow: hidden;
+  touch-action: pan-y;
+}
+
+.site-swiper .swiper-wrapper {
+  align-items: stretch;
+}
+
+.site-swiper .swiper-slide {
+  position: relative !important;
+  left: auto !important;
+  right: auto !important;
+  top: auto !important;
+  bottom: auto !important;
+  flex-shrink: 0;
+  transform: none;
+}
+
+.categories__swiper {
+  position: absolute;
+  left: 100px;
+  top: 190px;
+  width: 1720px;
+  height: 653px;
+}
+
+.categories__swiper .swiper-wrapper {
+  display: grid;
+  grid-template-columns: repeat(7, 230px);
+  grid-auto-rows: 300px;
+  gap: 53px 18px;
+  transform: none !important;
+}
+
+.categories__swiper .cat-card {
+  width: 230px;
+  height: 300px !important;
+}
+
+.deals__swiper {
+  position: absolute;
+  left: 701px;
+  top: 56px;
+  width: 1118px;
+  height: 456px;
+}
+
+.deals__swiper .deal-card {
+  width: 359px;
+  height: 456px !important;
+}
+
+.season__swiper {
+  position: absolute;
+  left: 100px;
+  top: 190px;
+  width: 1720px;
+  height: 530px;
+}
+
+.season__swiper .season-card {
+  width: 409px;
+  height: 530px !important;
+}
+
+.testi__swiper {
+  position: absolute;
+  left: 100px;
+  top: 154px;
+  width: 1720px;
+  height: 304px;
+}
+
+.testi__swiper .testi-card {
+  width: 712px;
+  height: 304px !important;
+}
+
+.brand__swiper {
+  position: absolute;
+  left: 152px;
+  top: 269px;
+  width: 1615px;
+  height: 425px;
+}
+
+.brand__swiper .swiper-wrapper {
+  align-items: center;
+}
+
+.brand__swiper .brand-card {
+  width: 307px;
+  height: 385px !important;
+  transition: height 0.42s ease, transform 0.42s ease, opacity 0.28s ease;
+}
+
+.brand__swiper .swiper-slide-active.brand-card {
+  height: 425px !important;
+  transform: translateY(0);
+}
+
+.brands__swiper {
+  position: absolute;
+  left: 100px;
+  top: 186px;
+  width: 1720px;
+  height: 152px;
+}
+
+.brands__swiper .swiper-wrapper {
+  align-items: center;
+}
+
+.brands__swiper .brand-logo {
+  width: 150px;
+  height: 152px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+}
+
+.brands__swiper .brand-logo img,
+.brands__swiper .brand-logo .crop,
+.brands__swiper .brand-logo--yusuf img {
+  position: relative !important;
+  left: auto !important;
+  top: auto !important;
+  width: 100% !important;
+  max-width: 225px;
+  height: 100% !important;
+  object-fit: contain !important;
+}
+
+@media (max-width: 1023px) {
+  .deals__carousel,
+  .season__carousel,
+  .testi__carousel,
+  .brand__carousel,
+  .brands__carousel {
+    display: none !important;
+  }
+
+  .site-swiper {
+    position: relative !important;
+    left: auto !important;
+    top: auto !important;
+    width: calc(100% - 36px) !important;
+    max-width: 100% !important;
+    height: auto !important;
+    grid-column: 1 / -1;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .site-swiper .swiper-wrapper {
+    display: flex !important;
+    gap: 0 !important;
+  }
+
+  .site-swiper .swiper-slide {
+    width: 100% !important;
+    margin-right: 0 !important;
+  }
+
+  .site-swiper .swiper-slide:not(.swiper-slide-active) {
+    opacity: 0 !important;
+    visibility: hidden !important;
+  }
+
+  .site-swiper .swiper-slide-active {
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
+  .categories__swiper {
+    margin-top: 26px !important;
+  }
+
+  .deals__swiper,
+  .season__swiper,
+  .testi__swiper,
+  .brand__swiper,
+  .brands__swiper {
+    margin-top: 34px !important;
+    margin-bottom: 26px !important;
+  }
+
+  .site-swiper .cat-card,
+  .site-swiper .deal-card,
+  .site-swiper .season-card,
+  .site-swiper .brand-card {
+    margin: 0 !important;
+  }
+
+  .site-swiper .cat-card {
+    height: 300px !important;
+  }
+
+  .site-swiper .deal-card {
+    height: 456px !important;
+  }
+
+  .site-swiper .season-card,
+  .site-swiper .brand-card {
+    height: 430px !important;
+  }
+
+  .brand__swiper .swiper-slide-active.brand-card {
+    height: 430px !important;
+  }
+
+  .testi__swiper {
+    width: min(calc(100% - 36px), 680px) !important;
+    justify-self: center !important;
+    padding: 0 !important;
+  }
+
+  .testi__swiper .testi-card {
+    max-width: none !important;
+  }
+
+  .brands__swiper .brand-logo {
+    height: 112px !important;
+    padding: 10px 20px;
+  }
+
+  .brands__swiper .brand-logo img,
+  .brands__swiper .brand-logo .crop,
+  .brands__swiper .brand-logo--yusuf img {
+    max-width: 230px;
+  }
+}
+
+@media (max-width: 767px) {
+  .site-swiper {
+    width: calc(100% - 36px) !important;
+    padding: 0 !important;
+  }
+
+  .deals__swiper,
+  .season__swiper,
+  .testi__swiper,
+  .brand__swiper,
+  .brands__swiper {
+    margin-top: 36px !important;
+    margin-bottom: 30px !important;
+  }
+
+  .site-swiper .cat-card,
+  .site-swiper .deal-card,
+  .site-swiper .season-card,
+  .site-swiper .brand-card {
+    max-width: none !important;
+  }
+
+  .site-swiper .deal-card {
+    height: min(456px, calc((100vw - 52px) * 1.27)) !important;
+  }
+
+  .site-swiper .season-card,
+  .site-swiper .brand-card {
+    height: min(430px, calc((100vw - 52px) * 1.35)) !important;
+  }
+
+  .testi__swiper {
+    width: calc(100% - 36px) !important;
+    padding: 0 !important;
+  }
+
+  .testi__swiper .testi-card {
+    max-width: none !important;
   }
 }
