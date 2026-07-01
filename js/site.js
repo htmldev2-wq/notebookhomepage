@@ -253,13 +253,16 @@
     let touchStartX = 0;
     let touchStartY = 0;
     let isDragging = false;
+    const slideGap = () => window.innerWidth <= 767 ? 18 : 0;
+    const slideWidth = () => section.getBoundingClientRect().width || window.innerWidth || 1;
+    const slideOffset = () => index * (slideWidth() + slideGap());
     const render = () => {
       if (window.innerWidth > 767) {
         track.style.transform = "";
         options.onSlide?.(items, -1);
         return;
       }
-      track.style.transform = `translateX(-${index * 100}%)`;
+      track.style.transform = `translate3d(-${slideOffset()}px, 0, 0)`;
       options.onSlide?.(items, index);
     };
     const start = () => {
@@ -293,9 +296,7 @@
       const deltaY = touch.clientY - touchStartY;
       if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 8) {
         event.preventDefault();
-        const width = track.getBoundingClientRect().width || 1;
-        const dragPercent = (deltaX / width) * 100;
-        track.style.transform = `translateX(${(-index * 100) + dragPercent}%)`;
+        track.style.transform = `translate3d(${deltaX - slideOffset()}px, 0, 0)`;
       }
     }, { passive: false });
     track.addEventListener("touchend", (event) => {
@@ -343,13 +344,16 @@
   let brandTouchStartX = 0;
   let brandTouchStartY = 0;
   let brandIsDragging = false;
+  const brandSlideGap = () => window.innerWidth <= 767 ? 18 : 0;
+  const brandSlideWidth = () => brandsSection?.getBoundingClientRect().width || window.innerWidth || 1;
+  const brandSlideOffset = () => brandLogoIndex * (brandSlideWidth() + brandSlideGap());
   const renderBrandLogoSlider = () => {
     if (!brandsRow) return;
     if (window.innerWidth > 767) {
       brandsRow.style.transform = "";
       return;
     }
-    brandsRow.style.transform = `translateX(-${brandLogoIndex * 100}%)`;
+    brandsRow.style.transform = `translate3d(-${brandSlideOffset()}px, 0, 0)`;
   };
   brandsSection?.querySelector(".brands__carousel .arrow--prev")?.addEventListener("click", () => {
     if (!brandLogos.length) return;
@@ -394,9 +398,7 @@
     const deltaY = touch.clientY - brandTouchStartY;
     if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 8) {
       event.preventDefault();
-      const width = brandsRow.getBoundingClientRect().width || 1;
-      const dragPercent = (deltaX / width) * 100;
-      brandsRow.style.transform = `translateX(${(-brandLogoIndex * 100) + dragPercent}%)`;
+      brandsRow.style.transform = `translate3d(${deltaX - brandSlideOffset()}px, 0, 0)`;
     }
   }, { passive: false });
   brandsRow?.addEventListener("touchend", (event) => {

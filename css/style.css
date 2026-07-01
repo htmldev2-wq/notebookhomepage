@@ -5782,12 +5782,14 @@ button,
     flex-wrap: nowrap !important;
     justify-content: flex-start !important;
     align-items: center !important;
-    gap: 0 !important;
+    gap: 18px !important;
     width: 100% !important;
-    max-width: 100% !important;
+    max-width: none !important;
     overflow: visible !important;
-    transition: transform 0.62s cubic-bezier(0.22, 0.61, 0.36, 1);
+    transform: translate3d(0, 0, 0);
+    transition: transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
     will-change: transform;
+    backface-visibility: hidden;
     touch-action: pan-y;
   }
 
@@ -5839,11 +5841,13 @@ button,
     display: flex;
     flex-wrap: nowrap;
     align-items: stretch;
-    gap: 0;
+    gap: 18px;
     width: 100%;
     overflow: visible;
-    transition: transform 0.42s ease;
+    transform: translate3d(0, 0, 0);
+    transition: transform 0.48s cubic-bezier(0.22, 0.61, 0.36, 1);
     will-change: transform;
+    backface-visibility: hidden;
     touch-action: pan-y;
   }
 
