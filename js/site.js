@@ -244,6 +244,7 @@
     if (!section) return;
     const items = Array.from(section.querySelectorAll(itemSelector));
     if (items.length < 2) return;
+    const sliderBreakpoint = options.breakpoint || 1023;
     const track = document.createElement("div");
     track.className = "mobile-auto-track";
     section.insertBefore(track, items[0]);
@@ -256,7 +257,8 @@
     let dragAxis = "";
     let dragFrame = 0;
     let dragDeltaX = 0;
-    const slideGap = () => window.innerWidth <= 767 ? 18 : 0;
+    const isSliderViewport = () => window.innerWidth <= sliderBreakpoint;
+    const slideGap = () => isSliderViewport() ? (window.innerWidth <= 767 ? 18 : 24) : 0;
     const slideWidth = () => items[0]?.getBoundingClientRect().width || section.getBoundingClientRect().width || window.innerWidth || 1;
     const slideOffset = () => index * (slideWidth() + slideGap());
     const queueDrag = (deltaX) => {
@@ -274,7 +276,7 @@
       }
     };
     const render = () => {
-      if (window.innerWidth > 767) {
+      if (!isSliderViewport()) {
         track.style.transform = "";
         options.onSlide?.(items, -1);
         return;
@@ -285,20 +287,20 @@
     const start = () => {
       clearInterval(timer);
       render();
-      if (window.innerWidth > 767) return;
+      if (!isSliderViewport()) return;
       timer = setInterval(() => {
         index = (index + 1) % items.length;
         render();
       }, options.delay || 2800);
     };
     const moveTo = (direction) => {
-      if (window.innerWidth > 767) return;
+      if (!isSliderViewport()) return;
       index = (index + direction + items.length) % items.length;
       render();
       start();
     };
     track.addEventListener("touchstart", (event) => {
-      if (window.innerWidth > 767) return;
+      if (!isSliderViewport()) return;
       clearInterval(timer);
       const touch = event.touches[0];
       touchStartX = touch.clientX;
@@ -308,7 +310,7 @@
       dragDeltaX = 0;
     }, { passive: true });
     track.addEventListener("touchmove", (event) => {
-      if (window.innerWidth > 767 || !touchStartX || !isDragging) return;
+      if (!isSliderViewport() || !touchStartX || !isDragging) return;
       const touch = event.touches[0];
       const deltaX = touch.clientX - touchStartX;
       const deltaY = touch.clientY - touchStartY;
@@ -323,7 +325,7 @@
       }
     }, { passive: false });
     track.addEventListener("touchend", (event) => {
-      if (window.innerWidth > 767 || !touchStartX) return;
+      if (!isSliderViewport() || !touchStartX) return;
       const touch = event.changedTouches[0];
       const deltaX = touch.clientX - touchStartX;
       const shouldMove = dragAxis === "x" && Math.abs(deltaX) > Math.max(42, slideWidth() * 0.12);
@@ -369,6 +371,7 @@
   const brandsSection = document.querySelector(".brands");
   const brandsRow = brandsSection?.querySelector(".brands__row");
   const brandLogos = brandsRow ? Array.from(brandsRow.querySelectorAll(".brand-logo")) : [];
+  const brandSliderBreakpoint = 1023;
   let brandLogoIndex = 0;
   let brandLogoTimer = 0;
   let brandTouchStartX = 0;
@@ -377,7 +380,8 @@
   let brandDragAxis = "";
   let brandDragFrame = 0;
   let brandDragDeltaX = 0;
-  const brandSlideGap = () => window.innerWidth <= 767 ? 18 : 0;
+  const isBrandSliderViewport = () => window.innerWidth <= brandSliderBreakpoint;
+  const brandSlideGap = () => isBrandSliderViewport() ? (window.innerWidth <= 767 ? 18 : 24) : 0;
   const brandSlideWidth = () => brandLogos[0]?.getBoundingClientRect().width || brandsSection?.getBoundingClientRect().width || window.innerWidth || 1;
   const brandSlideOffset = () => brandLogoIndex * (brandSlideWidth() + brandSlideGap());
   const queueBrandDrag = (deltaX) => {
@@ -396,7 +400,7 @@
   };
   const renderBrandLogoSlider = () => {
     if (!brandsRow) return;
-    if (window.innerWidth > 767) {
+    if (!isBrandSliderViewport()) {
       brandsRow.style.transform = "";
       return;
     }
@@ -414,7 +418,7 @@
   });
   const startBrandLogoAutoSlide = () => {
     clearInterval(brandLogoTimer);
-    if (window.innerWidth > 767 || brandLogos.length < 2) {
+    if (!isBrandSliderViewport() || brandLogos.length < 2) {
       renderBrandLogoSlider();
       return;
     }
@@ -424,13 +428,13 @@
     }, 2600);
   };
   const moveBrandLogo = (direction) => {
-    if (window.innerWidth > 767 || !brandLogos.length) return;
+    if (!isBrandSliderViewport() || !brandLogos.length) return;
     brandLogoIndex = (brandLogoIndex + direction + brandLogos.length) % brandLogos.length;
     renderBrandLogoSlider();
     startBrandLogoAutoSlide();
   };
   brandsRow?.addEventListener("touchstart", (event) => {
-    if (window.innerWidth > 767) return;
+    if (!isBrandSliderViewport()) return;
     clearInterval(brandLogoTimer);
     const touch = event.touches[0];
     brandTouchStartX = touch.clientX;
@@ -440,7 +444,7 @@
     brandDragDeltaX = 0;
   }, { passive: true });
   brandsRow?.addEventListener("touchmove", (event) => {
-    if (window.innerWidth > 767 || !brandTouchStartX || !brandIsDragging) return;
+    if (!isBrandSliderViewport() || !brandTouchStartX || !brandIsDragging) return;
     const touch = event.touches[0];
     const deltaX = touch.clientX - brandTouchStartX;
     const deltaY = touch.clientY - brandTouchStartY;
@@ -455,7 +459,7 @@
     }
   }, { passive: false });
   brandsRow?.addEventListener("touchend", (event) => {
-    if (window.innerWidth > 767 || !brandTouchStartX) return;
+    if (!isBrandSliderViewport() || !brandTouchStartX) return;
     const touch = event.changedTouches[0];
     const deltaX = touch.clientX - brandTouchStartX;
     const shouldMove = brandDragAxis === "x" && Math.abs(deltaX) > Math.max(42, brandSlideWidth() * 0.12);
