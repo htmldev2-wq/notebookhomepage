@@ -134,9 +134,7 @@
     { lines: ["Corporate", "Gift", "Sets"], primary: "View Products", secondary: "Get a Quote", image: "assets/images/hero-slide-2.png" },
     { lines: ["Custom", "Branded", "Merchandise"], primary: "Explore Products", secondary: "Start Enquiry", image: "assets/images/hero-slide-3.png" }
   ];
-  let heroIndex = 0;
-  const applyHero = (animate = false) => {
-    const slide = heroSlides[heroIndex];
+  const applyHero = (slide, animate = false) => {
     const heroImage = document.querySelector(".hero__image");
     const heroContent = document.querySelector(".hero__title");
     const update = () => {
@@ -165,14 +163,6 @@
       });
     }, 150);
   };
-  document.querySelector(".hero__arrow--prev")?.addEventListener("click", () => {
-    heroIndex = (heroIndex - 1 + heroSlides.length) % heroSlides.length;
-    applyHero(true);
-  });
-  document.querySelector(".hero__arrow--next")?.addEventListener("click", () => {
-    heroIndex = (heroIndex + 1) % heroSlides.length;
-    applyHero(true);
-  });
 
   const setBrandCardState = (card, isActive) => {
     const label = card.querySelector(".brand-card__label");
@@ -197,298 +187,174 @@
     }
   };
 
-  const createCarousel = (sectionSelector, itemSelector, options = {}) => {
+  const hasSwiper = typeof window.Swiper === "function";
+
+  const makeSwiper = (sectionSelector, itemSelector, options = {}) => {
+    if (!hasSwiper) return null;
     const section = document.querySelector(sectionSelector);
-    if (!section) return;
-    const items = Array.from(section.querySelectorAll(itemSelector));
-    if (items.length < 2) return;
-    const positions = items.map((item) => ({
-      left: item.style.left,
-      top: item.style.top,
-      width: item.style.width,
-      height: item.style.height,
-      zIndex: item.style.zIndex || ""
-    }));
-    let order = items.map((_, index) => index);
-    const render = () => {
-      order.forEach((itemIndex, slot) => {
-        const item = items[itemIndex];
-        item.classList.add("desktop-carousel-card");
-        item.style.left = positions[slot].left;
-        item.style.top = positions[slot].top;
-        item.style.width = positions[slot].width;
-        item.style.height = positions[slot].height;
-        item.style.zIndex = positions[slot].zIndex;
-        options.onRenderItem?.(item, slot);
+    if (!section || section.querySelector(".site-swiper")) return null;
+    const source = options.sourceSelector ? section.querySelector(options.sourceSelector) : section;
+    if (!source) return null;
+    const items = Array.from(source.querySelectorAll(`:scope > ${itemSelector}`));
+    if (items.length < 2) return null;
+
+    const swiperEl = document.createElement("div");
+    swiperEl.className = `swiper site-swiper ${options.className || ""}`.trim();
+    const wrapper = document.createElement("div");
+    wrapper.className = "swiper-wrapper";
+    swiperEl.appendChild(wrapper);
+    section.insertBefore(swiperEl, options.sourceSelector ? source : items[0]);
+    if (options.sourceSelector) source.remove();
+
+    items.forEach((item) => {
+      item.classList.add("swiper-slide");
+      item.removeAttribute("style");
+      wrapper.appendChild(item);
+    });
+
+    const nav = options.navSelector ? section.querySelector(options.navSelector) : null;
+    const config = {
+      loop: items.length > 2,
+      speed: options.speed || 650,
+      grabCursor: true,
+      watchSlidesProgress: true,
+      observer: true,
+      observeParents: true,
+      allowTouchMove: true,
+      slidesPerView: 1,
+      centeredSlides: true,
+      spaceBetween: 18,
+      autoplay: options.autoplay ? {
+        delay: options.delay || 2800,
+        disableOnInteraction: false,
+        pauseOnMouseEnter: true
+      } : false,
+      breakpoints: options.breakpoints || {},
+      on: {
+        init(swiper) {
+          options.onActive?.(items, swiper.realIndex, swiper);
+        },
+        slideChange(swiper) {
+          options.onActive?.(items, swiper.realIndex, swiper);
+        }
+      }
+    };
+    if (nav) {
+      config.navigation = {
+        prevEl: nav.querySelector(".arrow--prev"),
+        nextEl: nav.querySelector(".arrow--next")
+      };
+    }
+    return new window.Swiper(swiperEl, config);
+  };
+
+  if (hasSwiper) {
+    const hero = document.querySelector(".hero");
+    const heroImage = document.querySelector(".hero__image");
+    if (hero && heroImage && !hero.querySelector(".hero__swiper")) {
+      const heroSwiperEl = document.createElement("div");
+      heroSwiperEl.className = "swiper hero__swiper";
+      heroSwiperEl.innerHTML = `
+        <div class="swiper-wrapper">
+          ${heroSlides.map((slide) => `<div class="swiper-slide"><span class="hero__slide-bg" style="background-image:url('${slide.image}')"></span></div>`).join("")}
+        </div>
+      `;
+      hero.insertBefore(heroSwiperEl, heroImage);
+      heroImage.setAttribute("aria-hidden", "true");
+      new window.Swiper(heroSwiperEl, {
+        loop: true,
+        speed: 700,
+        effect: "fade",
+        fadeEffect: { crossFade: true },
+        allowTouchMove: true,
+        autoplay: {
+          delay: 3800,
+          disableOnInteraction: false
+        },
+        navigation: {
+          prevEl: ".hero__arrow--prev",
+          nextEl: ".hero__arrow--next"
+        },
+        on: {
+          init(swiper) {
+            applyHero(heroSlides[swiper.realIndex], false);
+          },
+          slideChange(swiper) {
+            applyHero(heroSlides[swiper.realIndex], true);
+          }
+        }
       });
-    };
-    const move = (direction) => {
-      if (direction > 0) order.unshift(order.pop());
-      else order.push(order.shift());
-      render();
-    };
-    section.querySelector(".arrow--prev")?.addEventListener("click", () => move(-1));
-    section.querySelector(".arrow--next")?.addEventListener("click", () => move(1));
-    render();
-  };
-
-  createCarousel(".deals", ".deal-card");
-  createCarousel(".season", ".season-card");
-  createCarousel(".testi", ".testi-card");
-  createCarousel(".brand", ".brand-card", {
-    onRenderItem: (item, slot) => setBrandCardState(item, slot === 2)
-  });
-
-  const setupMobileAutoSlider = (sectionSelector, itemSelector, options = {}) => {
-    const section = document.querySelector(sectionSelector);
-    if (!section) return;
-    const items = Array.from(section.querySelectorAll(itemSelector));
-    if (items.length < 2) return;
-    const sliderBreakpoint = options.breakpoint || 1023;
-    const track = document.createElement("div");
-    track.className = "mobile-auto-track";
-    section.insertBefore(track, items[0]);
-    items.forEach((item) => track.appendChild(item));
-    let index = options.startIndex || 0;
-    let timer = 0;
-    let touchStartX = 0;
-    let touchStartY = 0;
-    let isDragging = false;
-    let dragAxis = "";
-    let dragFrame = 0;
-    let dragDeltaX = 0;
-    const isSliderViewport = () => window.innerWidth <= sliderBreakpoint;
-    const slideGap = () => isSliderViewport() ? (window.innerWidth <= 767 ? 18 : 24) : 0;
-    const slideWidth = () => items[0]?.getBoundingClientRect().width || section.getBoundingClientRect().width || window.innerWidth || 1;
-    const slideOffset = () => index * (slideWidth() + slideGap());
-    const queueDrag = (deltaX) => {
-      dragDeltaX = deltaX;
-      if (dragFrame) return;
-      dragFrame = window.requestAnimationFrame(() => {
-        track.style.transform = `translate3d(${dragDeltaX - slideOffset()}px, 0, 0)`;
-        dragFrame = 0;
-      });
-    };
-    const clearDrag = () => {
-      if (dragFrame) {
-        window.cancelAnimationFrame(dragFrame);
-        dragFrame = 0;
-      }
-    };
-    const render = () => {
-      if (!isSliderViewport()) {
-        track.style.transform = "";
-        options.onSlide?.(items, -1);
-        return;
-      }
-      track.style.transform = `translate3d(-${slideOffset()}px, 0, 0)`;
-      options.onSlide?.(items, index);
-    };
-    const start = () => {
-      clearInterval(timer);
-      render();
-      if (!isSliderViewport()) return;
-      timer = setInterval(() => {
-        index = (index + 1) % items.length;
-        render();
-      }, options.delay || 2800);
-    };
-    const moveTo = (direction) => {
-      if (!isSliderViewport()) return;
-      index = (index + direction + items.length) % items.length;
-      render();
-      start();
-    };
-    track.addEventListener("touchstart", (event) => {
-      if (!isSliderViewport()) return;
-      clearInterval(timer);
-      const touch = event.touches[0];
-      touchStartX = touch.clientX;
-      touchStartY = touch.clientY;
-      isDragging = true;
-      dragAxis = "";
-      dragDeltaX = 0;
-    }, { passive: true });
-    track.addEventListener("touchmove", (event) => {
-      if (!isSliderViewport() || !touchStartX || !isDragging) return;
-      const touch = event.touches[0];
-      const deltaX = touch.clientX - touchStartX;
-      const deltaY = touch.clientY - touchStartY;
-      if (!dragAxis) {
-        if (Math.abs(deltaX) < 6 && Math.abs(deltaY) < 6) return;
-        dragAxis = Math.abs(deltaX) > Math.abs(deltaY) ? "x" : "y";
-        if (dragAxis === "x") track.style.transition = "none";
-      }
-      if (dragAxis === "x") {
-        event.preventDefault();
-        queueDrag(deltaX);
-      }
-    }, { passive: false });
-    track.addEventListener("touchend", (event) => {
-      if (!isSliderViewport() || !touchStartX) return;
-      const touch = event.changedTouches[0];
-      const deltaX = touch.clientX - touchStartX;
-      const shouldMove = dragAxis === "x" && Math.abs(deltaX) > Math.max(42, slideWidth() * 0.12);
-      clearDrag();
-      touchStartX = 0;
-      touchStartY = 0;
-      isDragging = false;
-      dragAxis = "";
-      dragDeltaX = 0;
-      track.style.transition = "";
-      if (shouldMove) {
-        moveTo(deltaX < 0 ? 1 : -1);
-      } else {
-        start();
-      }
-    });
-    track.addEventListener("touchcancel", () => {
-      clearDrag();
-      touchStartX = 0;
-      touchStartY = 0;
-      isDragging = false;
-      dragAxis = "";
-      dragDeltaX = 0;
-      track.style.transition = "";
-      start();
-    });
-    window.addEventListener("resize", start);
-    start();
-  };
-
-  setupMobileAutoSlider(".deals", ".deal-card", { delay: 2600 });
-  setupMobileAutoSlider(".season", ".season-card", { delay: 2800 });
-  setupMobileAutoSlider(".testi", ".testi-card", { delay: 3200 });
-  setupMobileAutoSlider(".brand", ".brand-card", {
-    delay: 3000,
-    startIndex: 2,
-    onSlide: (items, activeIndex) => {
-      if (activeIndex < 0) return;
-      items.forEach((item, itemIndex) => setBrandCardState(item, itemIndex === activeIndex));
-    }
-  });
-
-  const brandsSection = document.querySelector(".brands");
-  const brandsRow = brandsSection?.querySelector(".brands__row");
-  const brandLogos = brandsRow ? Array.from(brandsRow.querySelectorAll(".brand-logo")) : [];
-  const brandSliderBreakpoint = 1023;
-  let brandLogoIndex = 0;
-  let brandLogoTimer = 0;
-  let brandTouchStartX = 0;
-  let brandTouchStartY = 0;
-  let brandIsDragging = false;
-  let brandDragAxis = "";
-  let brandDragFrame = 0;
-  let brandDragDeltaX = 0;
-  const isBrandSliderViewport = () => window.innerWidth <= brandSliderBreakpoint;
-  const brandSlideGap = () => isBrandSliderViewport() ? (window.innerWidth <= 767 ? 18 : 24) : 0;
-  const brandSlideWidth = () => brandLogos[0]?.getBoundingClientRect().width || brandsSection?.getBoundingClientRect().width || window.innerWidth || 1;
-  const brandSlideOffset = () => brandLogoIndex * (brandSlideWidth() + brandSlideGap());
-  const queueBrandDrag = (deltaX) => {
-    brandDragDeltaX = deltaX;
-    if (brandDragFrame) return;
-    brandDragFrame = window.requestAnimationFrame(() => {
-      brandsRow.style.transform = `translate3d(${brandDragDeltaX - brandSlideOffset()}px, 0, 0)`;
-      brandDragFrame = 0;
-    });
-  };
-  const clearBrandDrag = () => {
-    if (brandDragFrame) {
-      window.cancelAnimationFrame(brandDragFrame);
-      brandDragFrame = 0;
-    }
-  };
-  const renderBrandLogoSlider = () => {
-    if (!brandsRow) return;
-    if (!isBrandSliderViewport()) {
-      brandsRow.style.transform = "";
-      return;
-    }
-    brandsRow.style.transform = `translate3d(-${brandSlideOffset()}px, 0, 0)`;
-  };
-  brandsSection?.querySelector(".brands__carousel .arrow--prev")?.addEventListener("click", () => {
-    if (!brandLogos.length) return;
-    brandLogoIndex = (brandLogoIndex - 1 + brandLogos.length) % brandLogos.length;
-    renderBrandLogoSlider();
-  });
-  brandsSection?.querySelector(".brands__carousel .arrow--next")?.addEventListener("click", () => {
-    if (!brandLogos.length) return;
-    brandLogoIndex = (brandLogoIndex + 1) % brandLogos.length;
-    renderBrandLogoSlider();
-  });
-  const startBrandLogoAutoSlide = () => {
-    clearInterval(brandLogoTimer);
-    if (!isBrandSliderViewport() || brandLogos.length < 2) {
-      renderBrandLogoSlider();
-      return;
-    }
-    brandLogoTimer = setInterval(() => {
-      brandLogoIndex = (brandLogoIndex + 1) % brandLogos.length;
-      renderBrandLogoSlider();
-    }, 2600);
-  };
-  const moveBrandLogo = (direction) => {
-    if (!isBrandSliderViewport() || !brandLogos.length) return;
-    brandLogoIndex = (brandLogoIndex + direction + brandLogos.length) % brandLogos.length;
-    renderBrandLogoSlider();
-    startBrandLogoAutoSlide();
-  };
-  brandsRow?.addEventListener("touchstart", (event) => {
-    if (!isBrandSliderViewport()) return;
-    clearInterval(brandLogoTimer);
-    const touch = event.touches[0];
-    brandTouchStartX = touch.clientX;
-    brandTouchStartY = touch.clientY;
-    brandIsDragging = true;
-    brandDragAxis = "";
-    brandDragDeltaX = 0;
-  }, { passive: true });
-  brandsRow?.addEventListener("touchmove", (event) => {
-    if (!isBrandSliderViewport() || !brandTouchStartX || !brandIsDragging) return;
-    const touch = event.touches[0];
-    const deltaX = touch.clientX - brandTouchStartX;
-    const deltaY = touch.clientY - brandTouchStartY;
-    if (!brandDragAxis) {
-      if (Math.abs(deltaX) < 6 && Math.abs(deltaY) < 6) return;
-      brandDragAxis = Math.abs(deltaX) > Math.abs(deltaY) ? "x" : "y";
-      if (brandDragAxis === "x") brandsRow.style.transition = "none";
-    }
-    if (brandDragAxis === "x") {
-      event.preventDefault();
-      queueBrandDrag(deltaX);
-    }
-  }, { passive: false });
-  brandsRow?.addEventListener("touchend", (event) => {
-    if (!isBrandSliderViewport() || !brandTouchStartX) return;
-    const touch = event.changedTouches[0];
-    const deltaX = touch.clientX - brandTouchStartX;
-    const shouldMove = brandDragAxis === "x" && Math.abs(deltaX) > Math.max(42, brandSlideWidth() * 0.12);
-    clearBrandDrag();
-    brandTouchStartX = 0;
-    brandTouchStartY = 0;
-    brandIsDragging = false;
-    brandDragAxis = "";
-    brandDragDeltaX = 0;
-    brandsRow.style.transition = "";
-    if (shouldMove) {
-      moveBrandLogo(deltaX < 0 ? 1 : -1);
     } else {
-      startBrandLogoAutoSlide();
+      applyHero(heroSlides[0], false);
     }
-  });
-  brandsRow?.addEventListener("touchcancel", () => {
-    clearBrandDrag();
-    brandTouchStartX = 0;
-    brandTouchStartY = 0;
-    brandIsDragging = false;
-    brandDragAxis = "";
-    brandDragDeltaX = 0;
-    brandsRow.style.transition = "";
-    startBrandLogoAutoSlide();
-  });
-  window.addEventListener("resize", startBrandLogoAutoSlide);
-  renderBrandLogoSlider();
-  startBrandLogoAutoSlide();
+
+    makeSwiper(".deals", ".deal-card", {
+      className: "deals__swiper",
+      navSelector: ".deals__carousel",
+      autoplay: true,
+      delay: 2600,
+      breakpoints: {
+        0: { slidesPerView: 1, spaceBetween: 0, centeredSlides: false },
+        768: { slidesPerView: 1, spaceBetween: 0, centeredSlides: false },
+        1024: { slidesPerView: 3, spaceBetween: 21, centeredSlides: false }
+      }
+    });
+
+    makeSwiper(".season", ".season-card", {
+      className: "season__swiper",
+      navSelector: ".season__carousel",
+      autoplay: true,
+      delay: 2800,
+      breakpoints: {
+        0: { slidesPerView: 1, spaceBetween: 0, centeredSlides: false },
+        768: { slidesPerView: 1, spaceBetween: 0, centeredSlides: false },
+        1024: { slidesPerView: 4, spaceBetween: 27, centeredSlides: false }
+      }
+    });
+
+    makeSwiper(".testi", ".testi-card", {
+      className: "testi__swiper",
+      navSelector: ".testi__carousel",
+      autoplay: true,
+      delay: 3300,
+      breakpoints: {
+        0: { slidesPerView: 1, spaceBetween: 0, centeredSlides: false },
+        768: { slidesPerView: 1, spaceBetween: 0, centeredSlides: false },
+        1024: { slidesPerView: 2.35, spaceBetween: 38, centeredSlides: true }
+      }
+    });
+
+    makeSwiper(".brand", ".brand-card", {
+      className: "brand__swiper",
+      navSelector: ".brand__carousel",
+      autoplay: true,
+      delay: 3000,
+      breakpoints: {
+        0: { slidesPerView: 1, spaceBetween: 0, centeredSlides: false },
+        768: { slidesPerView: 1, spaceBetween: 0, centeredSlides: false },
+        1024: { slidesPerView: 5, spaceBetween: 20, centeredSlides: true }
+      },
+      onActive: (items, activeIndex) => {
+        items.forEach((item, itemIndex) => setBrandCardState(item, itemIndex === activeIndex));
+      }
+    });
+
+    makeSwiper(".brands", ".brand-logo", {
+      className: "brands__swiper",
+      sourceSelector: ".brands__row",
+      navSelector: ".brands__carousel",
+      autoplay: true,
+      delay: 2400,
+      speed: 720,
+      breakpoints: {
+        0: { slidesPerView: 1, spaceBetween: 0, centeredSlides: false },
+        768: { slidesPerView: 1, spaceBetween: 0, centeredSlides: false },
+        1024: { slidesPerView: 7, spaceBetween: 48, centeredSlides: false }
+      }
+    });
+  } else {
+    applyHero(heroSlides[0], false);
+  }
 
   const faqItems = Array.from(document.querySelectorAll(".faq-item"));
   const setFaqOpen = (activeIndex) => {
