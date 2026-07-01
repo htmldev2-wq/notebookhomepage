@@ -49,7 +49,7 @@
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${text}`, "_blank", "noopener");
   };
 
-  document.querySelectorAll(".deal-card__wa, .pill--wa").forEach((control) => {
+  const wireWaButton = (control) => {
     control.setAttribute("href", `https://wa.me/${WHATSAPP_NUMBER}`);
     control.addEventListener("click", (event) => {
       event.preventDefault();
@@ -57,16 +57,18 @@
       const title = card?.querySelector("h3, .product-card__title")?.textContent?.trim();
       openWhatsApp(title ? `Hello NoteBook, I am interested in ${title}.` : undefined);
     });
-  });
+  };
+  document.querySelectorAll(".deal-card__wa, .pill--wa").forEach(wireWaButton);
 
-  document.querySelectorAll(".pill--enq, .season-card__btn, .brand-card__more").forEach((control) => {
+  const wireEnquiryButton = (control) => {
     control.setAttribute("href", "#contact");
     control.addEventListener("click", (event) => {
       event.preventDefault();
       showToast("Request form is ready for your enquiry.");
       scrollToTarget("contact");
     });
-  });
+  };
+  document.querySelectorAll(".pill--enq, .season-card__btn, .brand-card__more").forEach(wireEnquiryButton);
 
   document.querySelectorAll(".cat-card__btn").forEach((control) => {
     control.setAttribute("href", "#featured");
@@ -189,6 +191,35 @@
 
   const hasSwiper = typeof window.Swiper === "function";
 
+  // Swiper can only fake a seamless loop when there are meaningfully more
+  // slides than fit on screen at once. When a breakpoint's slidesPerView
+  // covers (or nearly covers) the whole slide count, looping/autoplay has
+  // nothing to cycle into and Swiper reshuffles real slides instead of
+  // cloning them, leaving a visible gap and a jump on every autoplay tick.
+  // Disable loop/autoplay per-breakpoint whenever that breakpoint can't
+  // safely support it, instead of enabling it globally off the raw count.
+  // Swiper's breakpoint switcher merges each breakpoint's own keys onto the
+  // *current* live params, not back onto the original config, so a key a
+  // breakpoint never mentions does not get restored when you leave a
+  // breakpoint that did set it. Every breakpoint must declare loop/autoplay
+  // explicitly so switching between them is never order-dependent.
+  const withSafeLoop = (breakpoints, itemCount, baseLoop, baseAutoplay) => {
+    const safe = {};
+    Object.entries(breakpoints).forEach(([width, cfg]) => {
+      const spv = typeof cfg.slidesPerView === "number" ? cfg.slidesPerView : 1;
+      const canLoop = itemCount > Math.ceil(spv);
+      safe[width] = canLoop
+        ? { ...cfg, loop: baseLoop, autoplay: baseAutoplay, allowSlideNext: true, allowSlidePrev: true, allowTouchMove: true }
+        // Fits entirely on screen: freeze navigation too, not just loop/autoplay.
+        // watchOverflow only auto-locks nav for non-centered layouts, so a
+        // centeredSlides breakpoint (e.g. brand) would otherwise still let an
+        // arrow click or drag shift slides out of alignment with nothing to
+        // fill the vacated slot.
+        : { ...cfg, loop: false, autoplay: false, allowSlideNext: false, allowSlidePrev: false, allowTouchMove: false };
+    });
+    return safe;
+  };
+
   const makeSwiper = (sectionSelector, itemSelector, options = {}) => {
     if (!hasSwiper) return null;
     const section = document.querySelector(sectionSelector);
@@ -197,6 +228,20 @@
     if (!source) return null;
     const items = Array.from(source.querySelectorAll(`:scope > ${itemSelector}`));
     if (items.length < 2) return null;
+
+    // Some sections don't have enough real cards yet for Swiper to loop
+    // smoothly on desktop (it needs roughly slidesPerView*2 slides to cycle
+    // into). Until more real content is added, pad with duplicates of the
+    // existing cards so prev/next actually slides instead of sitting locked.
+    if (options.minSlides && items.length < options.minSlides) {
+      const originalCount = items.length;
+      for (let i = 0; items.length < options.minSlides; i++) {
+        const clone = items[i % originalCount].cloneNode(true);
+        clone.setAttribute("data-dummy-duplicate", "true");
+        options.rewireClone?.(clone);
+        items.push(clone);
+      }
+    }
 
     const swiperEl = document.createElement("div");
     swiperEl.className = `swiper site-swiper ${options.className || ""}`.trim();
@@ -213,25 +258,37 @@
     });
 
     const nav = options.navSelector ? section.querySelector(options.navSelector) : null;
+    const baseLoop = items.length > 2;
+    const baseAutoplay = options.autoplay ? {
+      delay: options.delay || 2800,
+      disableOnInteraction: false,
+      pauseOnMouseEnter: true
+    } : false;
+    const breakpoints = withSafeLoop(options.breakpoints || {}, items.length, baseLoop, baseAutoplay);
     const config = {
-      loop: items.length > 2,
+      loop: baseLoop,
+      initialSlide: options.initialSlide || 0,
       speed: options.speed || 650,
       grabCursor: true,
       watchSlidesProgress: true,
       observer: true,
       observeParents: true,
+      resizeObserver: true,
       allowTouchMove: true,
       slidesPerView: 1,
       centeredSlides: true,
       spaceBetween: 18,
-      autoplay: options.autoplay ? {
-        delay: options.delay || 2800,
-        disableOnInteraction: false,
-        pauseOnMouseEnter: true
-      } : false,
-      breakpoints: options.breakpoints || {},
+      autoplay: baseAutoplay,
+      breakpoints,
       on: {
         init(swiper) {
+          // In loop mode Swiper's own initialSlide param doesn't account for
+          // the clone slides it prepends, so it can land one (or more) real
+          // slides off from what was asked for. slideToLoop resolves against
+          // the real index instead, so re-apply it once construction settles.
+          if (options.initialSlide && swiper.params.loop) {
+            swiper.slideToLoop(options.initialSlide, 0, false);
+          }
           options.onActive?.(items, swiper.realIndex, swiper);
         },
         slideChange(swiper) {
@@ -293,6 +350,10 @@
       navSelector: ".deals__carousel",
       autoplay: true,
       delay: 2600,
+      // Placeholder until more real deals are added: duplicate the 3 cards
+      // so desktop (slidesPerView: 3) has enough slides to actually slide.
+      minSlides: 6,
+      rewireClone: (clone) => clone.querySelectorAll(".deal-card__wa").forEach(wireWaButton),
       breakpoints: {
         0: { slidesPerView: 1, spaceBetween: 0, centeredSlides: false },
         768: { slidesPerView: 1, spaceBetween: 0, centeredSlides: false },
@@ -305,6 +366,10 @@
       navSelector: ".season__carousel",
       autoplay: true,
       delay: 2800,
+      // Placeholder until more real seasons are added: duplicate the 4 cards
+      // so desktop (slidesPerView: 4) has enough slides to actually slide.
+      minSlides: 8,
+      rewireClone: (clone) => clone.querySelectorAll(".season-card__btn").forEach(wireEnquiryButton),
       breakpoints: {
         0: { slidesPerView: 1, spaceBetween: 0, centeredSlides: false },
         768: { slidesPerView: 1, spaceBetween: 0, centeredSlides: false },
@@ -317,10 +382,17 @@
       navSelector: ".testi__carousel",
       autoplay: true,
       delay: 3300,
+      // Placeholder until more real reviews are added: duplicate the 3 cards
+      // so desktop (slidesPerView: 2.35) has enough slides to actually slide.
+      minSlides: 6,
       breakpoints: {
         0: { slidesPerView: 1, spaceBetween: 0, centeredSlides: false },
         768: { slidesPerView: 1, spaceBetween: 0, centeredSlides: false },
-        1024: { slidesPerView: 2.35, spaceBetween: 38, centeredSlides: true }
+        // centeredSlides left off here: combined with a fractional
+        // slidesPerView + loop, Swiper doesn't render a filler slide behind
+        // the active one once you move off slide 0, leaving a visible gap
+        // at the container's left edge.
+        1024: { slidesPerView: 2.35, spaceBetween: 38, centeredSlides: false }
       }
     });
 
@@ -329,6 +401,12 @@
       navSelector: ".brand__carousel",
       autoplay: true,
       delay: 3000,
+      initialSlide: 2,
+      // Placeholder until more real services are added: duplicate the 5
+      // cards so desktop (slidesPerView: 5) has enough slides to actually
+      // slide. No rewireClone needed here — onActive below rebuilds each
+      // card's label from its data-title/data-desc, clones included.
+      minSlides: 10,
       breakpoints: {
         0: { slidesPerView: 1, spaceBetween: 0, centeredSlides: false },
         768: { slidesPerView: 1, spaceBetween: 0, centeredSlides: false },
@@ -346,6 +424,9 @@
       autoplay: true,
       delay: 2400,
       speed: 720,
+      // Placeholder until more real logos are added: duplicate the 7 logos
+      // so desktop (slidesPerView: 7) has enough slides to autoplay through.
+      minSlides: 14,
       breakpoints: {
         0: { slidesPerView: 1, spaceBetween: 0, centeredSlides: false },
         768: { slidesPerView: 1, spaceBetween: 0, centeredSlides: false },
