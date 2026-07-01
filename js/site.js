@@ -253,9 +253,26 @@
     let touchStartX = 0;
     let touchStartY = 0;
     let isDragging = false;
+    let dragAxis = "";
+    let dragFrame = 0;
+    let dragDeltaX = 0;
     const slideGap = () => window.innerWidth <= 767 ? 18 : 0;
     const slideWidth = () => items[0]?.getBoundingClientRect().width || section.getBoundingClientRect().width || window.innerWidth || 1;
     const slideOffset = () => index * (slideWidth() + slideGap());
+    const queueDrag = (deltaX) => {
+      dragDeltaX = deltaX;
+      if (dragFrame) return;
+      dragFrame = window.requestAnimationFrame(() => {
+        track.style.transform = `translate3d(${dragDeltaX - slideOffset()}px, 0, 0)`;
+        dragFrame = 0;
+      });
+    };
+    const clearDrag = () => {
+      if (dragFrame) {
+        window.cancelAnimationFrame(dragFrame);
+        dragFrame = 0;
+      }
+    };
     const render = () => {
       if (window.innerWidth > 767) {
         track.style.transform = "";
@@ -287,36 +304,49 @@
       touchStartX = touch.clientX;
       touchStartY = touch.clientY;
       isDragging = true;
-      track.style.transition = "none";
+      dragAxis = "";
+      dragDeltaX = 0;
     }, { passive: true });
     track.addEventListener("touchmove", (event) => {
       if (window.innerWidth > 767 || !touchStartX || !isDragging) return;
       const touch = event.touches[0];
       const deltaX = touch.clientX - touchStartX;
       const deltaY = touch.clientY - touchStartY;
-      if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 8) {
+      if (!dragAxis) {
+        if (Math.abs(deltaX) < 6 && Math.abs(deltaY) < 6) return;
+        dragAxis = Math.abs(deltaX) > Math.abs(deltaY) ? "x" : "y";
+        if (dragAxis === "x") track.style.transition = "none";
+      }
+      if (dragAxis === "x") {
         event.preventDefault();
-        track.style.transform = `translate3d(${deltaX - slideOffset()}px, 0, 0)`;
+        queueDrag(deltaX);
       }
     }, { passive: false });
     track.addEventListener("touchend", (event) => {
       if (window.innerWidth > 767 || !touchStartX) return;
       const touch = event.changedTouches[0];
       const deltaX = touch.clientX - touchStartX;
+      const shouldMove = dragAxis === "x" && Math.abs(deltaX) > Math.max(42, slideWidth() * 0.12);
+      clearDrag();
       touchStartX = 0;
       touchStartY = 0;
       isDragging = false;
+      dragAxis = "";
+      dragDeltaX = 0;
       track.style.transition = "";
-      if (Math.abs(deltaX) > 42) {
+      if (shouldMove) {
         moveTo(deltaX < 0 ? 1 : -1);
       } else {
         start();
       }
     });
     track.addEventListener("touchcancel", () => {
+      clearDrag();
       touchStartX = 0;
       touchStartY = 0;
       isDragging = false;
+      dragAxis = "";
+      dragDeltaX = 0;
       track.style.transition = "";
       start();
     });
@@ -344,9 +374,26 @@
   let brandTouchStartX = 0;
   let brandTouchStartY = 0;
   let brandIsDragging = false;
+  let brandDragAxis = "";
+  let brandDragFrame = 0;
+  let brandDragDeltaX = 0;
   const brandSlideGap = () => window.innerWidth <= 767 ? 18 : 0;
   const brandSlideWidth = () => brandLogos[0]?.getBoundingClientRect().width || brandsSection?.getBoundingClientRect().width || window.innerWidth || 1;
   const brandSlideOffset = () => brandLogoIndex * (brandSlideWidth() + brandSlideGap());
+  const queueBrandDrag = (deltaX) => {
+    brandDragDeltaX = deltaX;
+    if (brandDragFrame) return;
+    brandDragFrame = window.requestAnimationFrame(() => {
+      brandsRow.style.transform = `translate3d(${brandDragDeltaX - brandSlideOffset()}px, 0, 0)`;
+      brandDragFrame = 0;
+    });
+  };
+  const clearBrandDrag = () => {
+    if (brandDragFrame) {
+      window.cancelAnimationFrame(brandDragFrame);
+      brandDragFrame = 0;
+    }
+  };
   const renderBrandLogoSlider = () => {
     if (!brandsRow) return;
     if (window.innerWidth > 767) {
@@ -389,36 +436,49 @@
     brandTouchStartX = touch.clientX;
     brandTouchStartY = touch.clientY;
     brandIsDragging = true;
-    brandsRow.style.transition = "none";
+    brandDragAxis = "";
+    brandDragDeltaX = 0;
   }, { passive: true });
   brandsRow?.addEventListener("touchmove", (event) => {
     if (window.innerWidth > 767 || !brandTouchStartX || !brandIsDragging) return;
     const touch = event.touches[0];
     const deltaX = touch.clientX - brandTouchStartX;
     const deltaY = touch.clientY - brandTouchStartY;
-    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 8) {
+    if (!brandDragAxis) {
+      if (Math.abs(deltaX) < 6 && Math.abs(deltaY) < 6) return;
+      brandDragAxis = Math.abs(deltaX) > Math.abs(deltaY) ? "x" : "y";
+      if (brandDragAxis === "x") brandsRow.style.transition = "none";
+    }
+    if (brandDragAxis === "x") {
       event.preventDefault();
-      brandsRow.style.transform = `translate3d(${deltaX - brandSlideOffset()}px, 0, 0)`;
+      queueBrandDrag(deltaX);
     }
   }, { passive: false });
   brandsRow?.addEventListener("touchend", (event) => {
     if (window.innerWidth > 767 || !brandTouchStartX) return;
     const touch = event.changedTouches[0];
     const deltaX = touch.clientX - brandTouchStartX;
+    const shouldMove = brandDragAxis === "x" && Math.abs(deltaX) > Math.max(42, brandSlideWidth() * 0.12);
+    clearBrandDrag();
     brandTouchStartX = 0;
     brandTouchStartY = 0;
     brandIsDragging = false;
+    brandDragAxis = "";
+    brandDragDeltaX = 0;
     brandsRow.style.transition = "";
-    if (Math.abs(deltaX) > 42) {
+    if (shouldMove) {
       moveBrandLogo(deltaX < 0 ? 1 : -1);
     } else {
       startBrandLogoAutoSlide();
     }
   });
   brandsRow?.addEventListener("touchcancel", () => {
+    clearBrandDrag();
     brandTouchStartX = 0;
     brandTouchStartY = 0;
     brandIsDragging = false;
+    brandDragAxis = "";
+    brandDragDeltaX = 0;
     brandsRow.style.transition = "";
     startBrandLogoAutoSlide();
   });
